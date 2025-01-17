@@ -68,3 +68,47 @@ dmypy.json
 *.pem
 *.key
 secrets.json
+
+# Flutter 프로젝트
+# Dart 패키지
+.dart_tool/
+.packages
+.pub-cache/
+.pub/
+
+# Flutter 빌드 결과
+build/
+flutter_export_environment.sh
+flutter_export_environment.bat
+
+# iOS 관련 파일
+ios/Flutter/Flutter.framework/
+ios/Flutter/Flutter.podspec
+ios/.symlinks/
+ios/Pods/
+ios/Podfile.lock
+ios/Runner.xcworkspace/
+ios/Generated.xcconfig
+ios/Flutter/App.framework/
+ios/Flutter/Debug.xcconfig
+ios/Flutter/Release.xcconfig
+
+# Android 관련 파일
+android/.gradle/
+android/app/proguard-rules.pro
+android/local.properties
+android/app/debug.keystore
+android/key.properties
+
+# Web 관련 파일
+web/.dart_tool/
+web/compiled/
+
+# macOS 관련 파일
+macos/Flutter/ephemeral/
+
+# Windows 관련 파일
+windows/flutter/generated_plugin_registrant.cc
+
+# Linux 관련 파일
+linux/flutter/generated_plugin_registrant.cc
