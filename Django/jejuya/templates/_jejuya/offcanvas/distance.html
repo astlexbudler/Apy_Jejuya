@@ -1,0 +1,39 @@
+<div class="offcanvas offcanvas-bottom" tabindex="-1" id="offcanvas-distance" aria-labelledby="offcanvasLabel" style="height: 320px;">
+  <div class="offcanvas-header border-bottom">
+    <h5 class="offcanvas-title">
+      검색 거리 설정
+    </h5>
+    <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+  </div>
+  <div class="offcanvas-body">
+    <h6>
+      {{point.name}} 근처 관광지 검색
+    </h6>
+    <p>
+      <i class="fa-solid fa-location-dot"></i> {{point.address}}
+    </p>
+    <!-- 거리 설정을 위한 프로그레스 바와 라벨 -->
+    <label for="distanceRange" class="form-label">관광지 검색 거리설정</label>
+    <div class="distance-slider mt-2">
+      <input type="range" class="form-range" min="5" max="20" step="5" id="distanceRange" value="{{distance}}" oninput="this.value=this.value;">
+      <div class="range-labels d-flex justify-content-between">
+        <span>5km</span>
+        <span>10km</span>
+        <span>15km</span>
+        <span>20km</span>
+      </div>
+    </div>
+    <!-- 관광지 추천 버튼 중앙 정렬 -->
+    <div class="mt-3 text-center">
+      <button class="btn btn-primary" onclick="searchDistance()">
+        검색하기
+      </button>
+    </div>
+  </div>
+</div>
+
+<div style="position: fixed; z-index: 999; left: 10px; bottom: 20px;">
+  <a class="btn btn-primary p-1 px-2 small" href="javascript: offcanvasDistance.show();">
+      {{distance}} km <i class="fa-solid fa-location-dot"></i>
+  </a>
+</div>

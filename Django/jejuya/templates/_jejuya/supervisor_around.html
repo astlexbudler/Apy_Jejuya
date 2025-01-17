@@ -1,0 +1,211 @@
+<!DOCTYPE html>
+<html lang="ko">
+    {% load static %}
+    {% csrf_token %}
+
+    <head>
+
+        <meta name="robots" content="noindex, nofollow">
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge"/>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+
+        <title>제주야 관리자</title>
+
+        <!-- favicon
+        ================================================== -->
+        <link rel="icon" type="image/png" href="/static/_jejuya/img/logos/favicon.png">
+        <link rel="shortcut icon" href="/static/_jejuya/img/logos/favicon.png" />
+        <link rel="apple-touch-icon" href="/static/_jejuya/img/logos/apple-touch-icon-57x57.png" />
+        <link rel="apple-touch-icon" sizes="72x72" href="/static/_jejuya/img/logos/apple-touch-icon-72x72.png" />
+        <link rel="apple-touch-icon" sizes="114x114" href="/static/_jejuya/img/logos/apple-touch-icon-114x114.png" />
+
+        <!-- style
+        ================================================== -->
+        <link rel="stylesheet" href="/static/_jejuya/css/plugins.css"/>
+        <link rel="stylesheet" href="/static/_jejuya/css/custom.css"/>
+        <link rel="stylesheet" href="/static/_jejuya/css/styles.css"/>
+        <link rel="stylesheet" href="/static/_jejuya/css/index.css"/>
+        <link rel="stylesheet" href="/static/search/search.css"/>
+        <link rel="stylesheet" href="/static/quform/css/base.css"/>
+
+    </head>
+
+    <body style="word-break: keep-all;" class="bg-white">
+
+        <!-- PAGE LOADING ================================================== -->
+        <div id="preloader"></div>
+
+        <!-- MAIN WRAPPER ================================================== -->
+        <div class="main-wrapper">
+
+            <!-- HEADER
+            ================================================== -->
+            {% include "_jejuya/parts/header.html" %}
+
+            <div class="form-group position-relative m-0" onkeyup="if(event.keyCode == 13) trySearch();">
+                <input id="searchKeyword" class="form-control" style="border-radius: 0px;" placeholder="검색어를 입력해주세요." value="{{request.GET.search}}">
+                <a href="javascript: trySearch();" class="position-absolute" style="right: 15px; top: 50%; transform: translateY(-50%); font-size: 24px;">
+                    <i class="fa-solid fa-search"></i>
+                </a>
+            </div>
+
+            <!-- MAIN SECTION
+            ================================================== -->
+            <div id="map" style="width:100%; height: calc(100vh - 130px);">
+                <!-- 키워드 스크롤 영역 -->
+                <div class="keyword-wrapper">
+                    <div class="keywords-container">
+                        <button class="keyword-btn"><i class="fa-solid fa-user" style="color: #FFD43B;"></i> 가족여행</button>
+                        <button class="keyword-btn"><i class="fa-solid fa-heart" style="color: #ff3b3b;"></i> 커플</button>
+                        <button class="keyword-btn"><i class="fa-solid fa-tree" style="color: #63E6BE;"></i> 야외</button>
+                        <button class="keyword-btn"><i class="fa-solid fa-mug-hot" style="color: #FFD43B;"></i> 카페</button>
+                        <button class="keyword-btn"><i class="fa-solid fa-utensils" style="color: #FFD43B;"></i> 맛집</button>
+                        <!-- 추가 키워드 버튼 -->
+                    </div>
+                </div>
+            </div>
+        </div>
+        {% include "_jejuya/offcanvas/point.html" %}
+        {% include "_jejuya/offcanvas/around.html" %}
+        {% include "_jejuya/offcanvas/modal_select_schedule.html" %}
+
+        <script src="/static/_jejuya/js/jquery.min.js"></script>
+        <script src="/static/_jejuya/js/popper.min.js"></script>
+        <script src="/static/_jejuya/js/bootstrap.min.js"></script>
+        <script src="/static/_jejuya/js/scrollIt.min.js"></script>
+        <script src="/static/_jejuya/js/nav-menu.js"></script>
+        <script src="/static/_jejuya/js/easy.responsive.tabs.js"></script>
+        <script src="/static/_jejuya/js/owl.carousel.js"></script>
+        <script src="/static/_jejuya/js/owl.carousel.thumbs.js"></script>
+        <script src="/static/_jejuya/js/animated-headline.js"></script>
+        <script src="/static/_jejuya/js/jquery.counterup.min.js"></script>
+        <script src="/static/_jejuya/js/jquery.stellar.min.js"></script>
+        <script src="/static/_jejuya/js/waypoints.min.js"></script>
+        <script src="/static/_jejuya/js/countdown.js"></script>
+        <script src="/static/_jejuya/js/clipboard.min.js"></script>
+        <script src="/static/_jejuya/js/jquery.magnific-popup.min.js"></script>
+        <script src="/static/_jejuya/js/isotope.pkgd.min.js"></script>
+        <script src="/static/_jejuya/js/jquery.mousewheel.min.js"></script>
+        <script src="/static/_jejuya/js/lightgallery-all.js"></script>
+        <script src="/static/_jejuya/js/wow.js"></script>
+        <script src="/static/_jejuya/js/prism.js"></script>
+        <script src="/static/_jejuya/js/xzoom.js"></script>
+        <script src="/static/_jejuya/js/jquery.hammer.min.js"></script>
+        <script src="/static/_jejuya/js/setup.js"></script>
+        <script src="/static/_jejuya/js/jarallax.min.js"></script>
+        <script src="/static/_jejuya/js/jarallax-video.js"></script>
+        <script src="/static/_jejuya/js/gsap.js"></script>
+        <script src="/static/_jejuya/js/scrolltrigger.js"></script>
+        <script src="/static/_jejuya/js/splittext.js"></script>
+        <script src="/static/_jejuya/js/gsap-animation.js"></script>
+        <script src="/static/_jejuya/js/custom.js"></script>
+        <script src="/static/_jejuya/js/main.js"></script>
+        <script src="//cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+        <script src="/static/quform/js/plugins.js"></script>
+        <script src="/static/quform/js/scripts.js"></script>
+        <script src="/static/search/search.js"></script>
+        <script>
+            window.onload = () => {
+                console.log(`Window loaded at ${getNowDt()}`);
+            }
+
+            // Bootstrap Offcanvas 관련 요소 선택
+            var offcanvasPointElement = document.getElementById('offcanvas-point');
+            var offcanvasAroundElement = document.getElementById('offcanvas-around');
+            // Offcanvas를 생성할 때 backdrop 옵션을 false로 설정
+            var offcanvasPoint = new bootstrap.Offcanvas(offcanvasPointElement, {
+                backdrop: false
+            });
+            var offcanvasAround = new bootstrap.Offcanvas(offcanvasAroundElement, {
+                backdrop: false
+            });
+            
+            var map = new naver.maps.Map(document.getElementById("map"),
+                {
+                    center: new naver.maps.LatLng(38, 127), zoom: 16
+                }
+            );
+        
+            var marker1 = new naver.maps.Marker({
+                map: map,
+                position: new naver.maps.LatLng(38, 127),
+                title: '38-127 마커 1'
+            });
+
+            var marker2 = new naver.maps.Marker({
+                map: map,
+                position: new naver.maps.LatLng(37.999, 127),
+                title: '38-127 마커 2'
+            });
+        
+            naver.maps.Event.addListener(map, 'click', function(e) {
+                console.log(`지도 클릭 위치: ${e.coord.x}, ${e.coord.y}`);
+            });
+        
+            marker1.addListener('click', function(e) {
+                console.log(`${e.overlay.title} 마커 클릭됨`);
+                 // 마커 클릭 시 오프캔버스 보여주기
+                 offcanvasPoint.show(); 
+            });
+            marker2.addListener('click', function(e) {
+                console.log(`${e.overlay.title} 마커 클릭됨`);
+                 // 마커 클릭 시 오프캔버스 보여주기
+                 offcanvasAround.show(); 
+            });
+        
+            setMap = (lat, lng) => {
+                var new_positions = new naver.maps.LatLng(lat, lng);
+        
+                map.setCenter(new_positions);
+            }
+        
+            addMarker = (title, lat, lng) => {
+                var new_positions = new naver.maps.LatLng(lat, lng);
+        
+                var new_marker = new naver.maps.Marker({
+                    map: map,
+                    position: new_positions,
+                    title: title
+                });
+        
+                new_marker.addListener('click', function(e) {
+                    console.log(`${e.overlay.title} 마커 클릭됨`);
+                });
+            }
+
+            recommendTouristSites = () => {
+                console.log('recommendTouristSites');
+                offcanvasAround.hide();
+            }
+
+            document.getElementById('schedule-select-modal').addEventListener('show.bs.modal', function (event) {
+                var button = event.relatedTarget;
+                // var recipient = button.getAttribute('data-whatever'); // 필요한 경우 사용
+                // 모달에 데이터 설정
+            });
+
+            // 일정 추가 버튼 로직
+            document.querySelectorAll('.list-group-item').forEach(item => {
+            item.addEventListener('click', function() {
+                // 모든 항목에서 'selected' 클래스 제거
+                document.querySelectorAll('.list-group-item').forEach(otherItem => {
+                    otherItem.classList.remove('selected');
+                });
+
+                // 현재 클릭된 항목에 'selected' 클래스 추가
+                this.classList.add('selected');
+
+                // 선택된 일정 로깅
+                console.log('일정이 선택되었습니다:', this.textContent);
+
+                // 여기에 일정 추가 로직을 실행할 수 있습니다.
+                // 예를 들어, 사용자의 선택을 서버에 저장하거나,
+                // 다른 UI 요소에 선택된 정보를 표시할 수 있습니다.
+            });
+        });
+
+        </script>
+    </body>
+
+</html>

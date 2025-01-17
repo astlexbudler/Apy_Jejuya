@@ -1,0 +1,844 @@
+<!DOCTYPE html>
+<html lang="ko">
+    {% load static %}
+    {% csrf_token %}
+
+    <head>
+
+        <meta name="robots" content="noindex, nofollow">
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge"/>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+
+        <title>제주야 관리자</title>
+
+        <!-- favicon
+        ================================================== -->
+        <link rel="icon" type="image/png" href="/static/_jejuya/img/logos/favicon.png">
+        <link rel="shortcut icon" href="/static/_jejuya/img/logos/favicon.png" />
+        <link rel="apple-touch-icon" href="/static/_jejuya/img/logos/apple-touch-icon-57x57.png" />
+        <link rel="apple-touch-icon" sizes="72x72" href="/static/_jejuya/img/logos/apple-touch-icon-72x72.png" />
+        <link rel="apple-touch-icon" sizes="114x114" href="/static/_jejuya/img/logos/apple-touch-icon-114x114.png" />
+
+        <!-- style
+        ================================================== -->
+        <link rel="stylesheet" href="/static/_jejuya/css/plugins.css"/>
+        <link rel="stylesheet" href="/static/_jejuya/css/custom.css"/>
+        <link rel="stylesheet" href="/static/_jejuya/css/styles.css"/>
+        <link rel="stylesheet" href="/static/_jejuya/css/index.css"/>
+        <link rel="stylesheet" href="/static/search/search.css"/>
+        <link rel="stylesheet" href="/static/quform/css/base.css"/>
+
+        <script type="text/javascript" src="https://openapi.map.naver.com/openapi/v3/maps.js?ncpClientId=9cif1z5tcu"></script>
+
+    </head>
+
+    <body style="word-break: keep-all;" class="bg-white">
+
+        <!-- PAGE LOADING ================================================== -->
+        <div id="preloader"></div>
+
+        <!-- MAIN WRAPPER ================================================== -->
+        <div class="main-wrapper">
+
+            <!-- HEADER
+            ================================================== -->
+            {% include "_jejuya/parts/header_supervisor.html" %}
+
+            <!-- MAIN SECTION
+            ================================================== -->
+            <section class="m-0 p-0 my-4" style="min-height: 100vh;">
+                <div class="container">
+
+                    <!-- goback -->
+                    <a class="small" href="javascript: window.location.href='/supervisor';">
+                        < 관리자 페이지로
+                    </a>
+
+                    <!-- title -->
+                    <div class="mt-2 mb-5">
+                        <div style="display: flex; justify-content: space-between; white-space: nowrap;">
+                            <div style="display: inline-block; text-align: left;">
+                                <h5>
+                                    검색 포인트들
+                                </h5>
+                                <small>
+                                    검색 포인트를 확인하고 관리합니다.
+                                </small>
+                            </div>
+                            <div style="display: inline-block; text-align: right;">
+                                <!-- add -->
+                                <a href="/supervisor_point_write" class="small">+ 검색 포인트 추가</a><br>
+                                <!-- csv -->
+                                <a href="javascript: new bootstrap.Modal(addCSVModal).show();" class="small">+ csv로 추가</a><br>
+                                <!-- init -->
+                                <a href="javascript: initPoints();" class="small"><i class="fa fa-sync"></i> 테이블 초기화</a>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- content -->
+                    <div class="my-4" style="overflow-y: scroll;">
+
+                        <table class="table table-bordered" id="resultTable">
+                            <tr>
+                                <td></td>
+                                <td>no</td>
+                                <td>
+                                    <div style="white-space: nowrap;">
+                                        장소 이름
+                                    </div>
+                                </td>
+                                <td>
+                                    주소
+                                </td>
+                                <td>
+                                    <div style="white-space: nowrap;">
+                                        객실 수
+                                    </div>
+                                </td>
+                                <td>
+                                    연락처
+                                </td>
+                                <td>
+                                    상세정보
+                                </td>
+                            </tr>
+                            {% for point in points %}
+                            <tr style="font-size: 14px;">
+                                <td>
+                                    <div class="text-center" style="white-space: nowrap;">
+                                        <a href="#" data-bs-toggle="modal" data-bs-target="#mediaPreview{{point.id}}">
+                                            <i class="fa fa-lg fa-image"></i>
+                                        </a> 
+                                        <a href="#" onclick="rewritePoint('{{point.id}}');">
+                                            <i class="fa fa-lg fa-pen"></i>
+                                        </a> 
+                                        <a href="#" onclick="deleteTableData('POINT', '{{point.id}}');">
+                                            <i class="fa fa-lg fa-trash"></i>
+                                        </a>
+                                    </div>
+                                </td>
+                                <td>
+                                    {{ forloop.counter }}
+                                </td>
+                                <td>
+                                    <div style="white-space: nowrap;">
+                                        {{ point.name }}
+                                    </div>
+                                </td>
+                                <td>
+                                    <div style="width: 120px;">
+                                        <a href="javascript: setPointLocation('{{point.latitude}}', '{{point.longitude}}');" class="text-dark" style="text-decoration: underline;">
+                                            {{ point.address }}
+                                        </a>
+                                    </div>
+                                </td>
+                                <td>{{ point.rooms_cnt }}</td>
+                                <td>
+                                    <div style="white-space: nowrap;">
+                                        {{ point.tel }}
+                                    </div>
+                                </td>
+                                <td>
+                                    <div style="width: 300px;">
+                                        {{ point.note|safe }}
+                                    </div>
+                                </td>
+                            </tr>
+                            <!-- 미디어 미리보기 모달 -->
+                            <div class="modal fade" id="mediaPreview{{point.id}}" tabindex="-1" aria-labelledby="modalLabel" aria-hidden="true">
+                                <div class="modal-dialog modal-dialog-centered">
+                                    <div class="modal-content">
+                                        <div class="modal-header">
+                                            <h5 class="modal-title">이미지 미리보기</h5>
+                                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                        </div>
+                                        <div class="modal-body">
+                                            <div class="owl-carousel owl-theme testmonial-style02">
+                                                {% for media in point.medias %}
+                                                <div class="item">
+                                                    <div class="bg-dark" style="width: 100%; height: 32vh; max-height: 350px; background: url('{{media}}') center/contain no-repeat;"></div>
+                                                </div>
+                                                {% endfor %}
+                                            </div>
+                                        </div>
+                                        <div class="modal-footer">
+                                            <a href="#" onclick="rewriteMedia('{{point.id}}');" class="btn btn-primary" data-bs-dismiss="modal">수정하기</a>
+                                            <a href="#" class="btn btn-secondary" data-bs-dismiss="modal">닫기</a>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            {% endfor %}
+                        </table>
+
+                    </div>
+
+                </div>
+            </section>
+
+        </div>
+
+        <!-- FIXED BUTTONS
+        ================================================== -->
+        <a href="#!" class="scroll-to-top"><i class="fas fa-angle-up" aria-hidden="true"></i></a>
+
+        <!-- MODALS
+        ================================================== -->
+        <!-- addCSV -->
+        <div class="modal fade" id="addCSVModal" tabindex="-1" aria-labelledby="modalLabel" aria-hidden="true">
+            <div class="modal-dialog modal-dialog-centered">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title">CSV로 추가</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <div class="form-group">
+                            <label>CSV 텍스트를 붙여넣어주세요.</label>
+                            <textarea id="csvText" class="form-control" style="height: 200px;"></textarea>
+                            <small>
+                                이름,주소,위도,경도,객실 수,연락처,상세정보..
+                            </small>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-primary" onclick="addCSV();">추가하기</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 미디어 재업로드 모달 -->
+        <div class="modal fade" id="mediaModal" tabindex="-1" aria-labelledby="modalLabel" aria-hidden="true">
+            <div class="modal-dialog modal-dialog-centered">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title">미디어 업로드</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <div class="form-group">
+
+                            <!-- multiful image upload -->
+                            <div class="row" id="multifulImage">
+                                <div class="form-group">
+                                    <div class="owl-carousel owl-theme testmonial-style02" style="height: 52vw; max-height: 400px;">
+
+                                        <!-- 이미지 0 -->
+                                        <div class="item preview0">
+                                            <div class="mb-4" style="margin:0 auto; width: 48vw; max-width: 350px;">
+                                                <div class="w-100 bg-dark text-end" style="background: url() center/contain no-repeat grey; height: 48vw; padding-right: 6px; max-height: 350px;">
+                                                    <a class="text-danger" href="javascript: deleteImage(0);">
+                                                        <i class="fa fa-lg fa-xmark"></i>
+                                                    </a>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <!-- 이미지 1 -->
+                                        <div class="item preview1">
+                                            <div class="mb-4" style="margin:0 auto; width: 48vw; max-width: 350px;">
+                                                <div class="w-100 bg-dark text-end" style="background: url() center/contain no-repeat grey; height: 48vw; padding-right: 6px; max-height: 350px;">
+                                                    <a class="text-danger" href="javascript: deleteImage(0);">
+                                                        <i class="fa fa-lg fa-xmark"></i>
+                                                    </a>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <!-- 이미지 2 -->
+                                        <div class="item preview2">
+                                            <div class="mb-4" style="margin:0 auto; width: 48vw; max-width: 350px;">
+                                                <div class="w-100 bg-dark text-end" style="background: url() center/contain no-repeat grey; height: 48vw; padding-right: 6px; max-height: 350px;">
+                                                    <a class="text-danger" href="deleteImage(2);">
+                                                        <i class="fa fa-lg fa-xmark"></i>
+                                                    </a>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <!-- 이미지 3 -->
+                                        <div class="item preview3">
+                                            <div class="mb-4" style="margin:0 auto; width: 48vw; max-width: 350px;">
+                                                <div class="w-100 bg-dark text-end" style="background: url() center/contain no-repeat grey; height: 48vw; padding-right: 6px; max-height: 350px;">
+                                                    <a class="text-danger" href="deleteImage(3);">
+                                                        <i class="fa fa-lg fa-xmark"></i>
+                                                    </a>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <!-- 이미지 4 -->
+                                        <div class="item preview4">
+                                            <div class="mb-4" style="margin:0 auto; width: 48vw; max-width: 350px;">
+                                                <div class="w-100 bg-dark text-end" style="background: url() center/contain no-repeat grey; height: 48vw; padding-right: 6px; max-height: 350px;">
+                                                    <a class="text-danger" href="deleteImage(4);">
+                                                        <i class="fa fa-lg fa-xmark"></i>
+                                                    </a>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <label>이미지(최대 5개 등록 가능)</label><br>
+                                    <small>이미지 선택형 또는 캐로셀</small>
+                                </div>
+                            </div>
+
+                            <!-- image upload -->
+                            <div class="row" id="imageUpload">
+                                <div class="form-group">
+                                    <input id="images" type="file" class="form-control" style="height: 35px;" accept="image/png, image/jpeg, image/gif" multiple>
+                                </div>
+                            </div>
+
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-primary" data-bs-dismiss="modal" onclick="setMedia();">저장하기</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 포인트 수정 모달 -->
+        <div class="modal fade" id="rewritePoint" tabindex="-1" aria-labelledby="modalLabel" aria-hidden="true">
+            <div class="modal-dialog modal-dialog-centered">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title">포인트 수정</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+
+                        <!-- address -->
+                        <div class="form-group mb-4">
+                            <div style="display: flex; justify-content: space-between; white-space: nowrap;">
+                                <div style="display: inline-block; text-align: left;">
+                                    <label>주소</label>
+                                </div>
+                                <div style="display: inline-block; text-align: right;">
+                                    <a href="javascript: sample3_execDaumPostcode();" class="butn style-one fill bg-secondary small p-1 px-2">
+                                        <i class="fa-solid fa-magnifying-glass"></i> 주소검색
+                                    </a>
+                                </div>
+                            </div>
+                            <div class="content">
+                                <div id="wrap" style="display:none;border:1px solid;width:100%;height:300px;margin:5px 0;position:relative">
+                                <img src="//t1.daumcdn.net/postcode/resource/images/close.png" id="btnFoldWrap" style="cursor:pointer;position:absolute;right:0px;top:-1px;z-index:1" onclick="foldDaumPostcode()" alt="접기 버튼">
+                                </div>
+                                <script src="//t1.daumcdn.net/mapjsapi/bundle/postcode/prod/postcode.v2.js"></script>
+                                <script>
+                                    // 우편번호 찾기 찾기 화면을 넣을 element
+                                    var element_wrap = document.getElementById('wrap');
+                                
+                                    function foldDaumPostcode() {
+                                        // iframe을 넣은 element를 안보이게 한다.
+                                        element_wrap.style.display = 'none';
+                                    }
+                                
+                                    function sample3_execDaumPostcode() {
+                                        // 현재 scroll 위치를 저장해놓는다.
+                                        var currentScroll = Math.max(document.body.scrollTop, document.documentElement.scrollTop);
+                                        new daum.Postcode({
+                                            oncomplete: function(data) {
+                                                // 검색결과 항목을 클릭했을때 실행할 코드를 작성하는 부분.
+                                
+                                                // 각 주소의 노출 규칙에 따라 주소를 조합한다.
+                                                // 내려오는 변수가 값이 없는 경우엔 공백('')값을 가지므로, 이를 참고하여 분기 한다.
+                                                var addr = ''; // 주소 변수
+                                                var extraAddr = ''; // 참고항목 변수
+                                
+                                                //사용자가 선택한 주소 타입에 따라 해당 주소 값을 가져온다.
+                                                if (data.userSelectedType === 'R') { // 사용자가 도로명 주소를 선택했을 경우
+                                                    addr = data.roadAddress;
+                                                } else { // 사용자가 지번 주소를 선택했을 경우(J)
+                                                    addr = data.jibunAddress;
+                                                }
+                                
+                                                // 사용자가 선택한 주소가 도로명 타입일때 참고항목을 조합한다.
+                                                if(data.userSelectedType === 'R'){
+                                                    // 법정동명이 있을 경우 추가한다. (법정리는 제외)
+                                                    // 법정동의 경우 마지막 문자가 "동/로/가"로 끝난다.
+                                                    if(data.bname !== '' && /[동|로|가]$/g.test(data.bname)){
+                                                        extraAddr += data.bname;
+                                                    }
+                                                    // 건물명이 있고, 공동주택일 경우 추가한다.
+                                                    if(data.buildingName !== '' && data.apartment === 'Y'){
+                                                        extraAddr += (extraAddr !== '' ? ', ' + data.buildingName : data.buildingName);
+                                                    }
+                                                    // 표시할 참고항목이 있을 경우, 괄호까지 추가한 최종 문자열을 만든다.
+                                                    if(extraAddr !== ''){
+                                                        extraAddr = ' (' + extraAddr + ')';
+                                                    }
+                                                }
+                                
+                                                // 우편번호와 주소 정보를 해당 필드에 넣는다.
+                                                document.getElementById("address").value = addr;
+                                
+                                                // iframe을 넣은 element를 안보이게 한다.
+                                                // (autoClose:false 기능을 이용한다면, 아래 코드를 제거해야 화면에서 사라지지 않는다.)
+                                                element_wrap.style.display = 'none';
+                                
+                                                // 우편번호 찾기 화면이 보이기 이전으로 scroll 위치를 되돌린다.
+                                                document.body.scrollTop = currentScroll;
+                                            },
+                                            // 우편번호 찾기 화면 크기가 조정되었을때 실행할 코드를 작성하는 부분. iframe을 넣은 element의 높이값을 조정한다.
+                                            onresize : function(size) {
+                                                element_wrap.style.height = size.height+'px';
+                                            },
+                                            width : '100%',
+                                            height : '100%'
+                                        }).embed(element_wrap);
+                                
+                                        // iframe을 넣은 element를 보이게 한다.
+                                        element_wrap.style.display = 'block';
+                                    }
+                                </script>
+                            </div>
+                            <input type="text" id="address" class="form-control mt-2 mb-1" placeholder="주소를 검색해주세요." readonly>
+                            <small>
+                                상세 주소가 있을 경우, 상세 정보에 입력해주세요.
+                            </small>
+                        </div>
+
+                        <!-- name -->
+                        <div class="form-group">
+                            <label>포인트 이름</label>
+                            <input type="text" class="form-control" id="name" placeholder="숙박업소 이름을 입력해주세요.">
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-6">
+                                <!-- tel -->
+                                <div class="form-group">
+                                    <label>전화번호</label>
+                                    <input type="text" class="form-control" id="tel" placeholder="연락처를 입력해주세요.">
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <!-- room_cnt -->
+                                <div class="form-group">
+                                    <label>객실 수</label>
+                                    <input class="form-control" id="room_cnt" placeholder="객실 수를 입력해주세요.">
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- detail -->
+                        <div class="row mt-2">
+                            <div class="form-group">
+                                <label>상세정보</label>
+                                <div class="editor-controls">
+                                    <select id="fontSize" class="control-select">
+                                        <option value="1">매우 작게</option>
+                                        <option value="2">작게</option>
+                                        <option value="3" selected>보통</option>
+                                        <option value="4">큼</option>
+                                        <option value="5">더 큼</option>
+                                        <option value="6">매우 큼</option>
+                                        <option value="7">최대</option>
+                                    </select>
+                                    <button id="boldToggleButton" class="editor-button" onclick="formatText('bold')">B</button>
+                                    <button id="underlineToggleButton" class="editor-button" onclick="formatText('underline')">U</button>
+                                    <button id="italicToggleButton" class="editor-button" onclick="formatText('italic')">I</button>
+                                </div>
+                                <div contenteditable="true" id="content"></div>
+                            </div>
+                        </div>
+
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-primary" onclick="setPoint();">저장하기</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 포인트 지도 모달 -->
+        <div class="modal fade" id="pointLocation" tabindex="-1" aria-labelledby="modalLabel" aria-hidden="true">
+            <div class="modal-dialog modal-dialog-centered">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title">포인트 위치</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+
+                        <div id="map" style="width:100%; height: 500px;"></div>
+                        <p id="addressText"></p>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">닫기</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <script src="/static/_jejuya/js/jquery.min.js"></script>
+        <script src="/static/_jejuya/js/popper.min.js"></script>
+        <script src="/static/_jejuya/js/bootstrap.min.js"></script>
+        <script src="/static/_jejuya/js/scrollIt.min.js"></script>
+        <script src="/static/_jejuya/js/nav-menu.js"></script>
+        <script src="/static/_jejuya/js/easy.responsive.tabs.js"></script>
+        <script src="/static/_jejuya/js/owl.carousel.js"></script>
+        <script src="/static/_jejuya/js/owl.carousel.thumbs.js"></script>
+        <script src="/static/_jejuya/js/animated-headline.js"></script>
+        <script src="/static/_jejuya/js/jquery.counterup.min.js"></script>
+        <script src="/static/_jejuya/js/jquery.stellar.min.js"></script>
+        <script src="/static/_jejuya/js/waypoints.min.js"></script>
+        <script src="/static/_jejuya/js/countdown.js"></script>
+        <script src="/static/_jejuya/js/clipboard.min.js"></script>
+        <script src="/static/_jejuya/js/jquery.magnific-popup.min.js"></script>
+        <script src="/static/_jejuya/js/isotope.pkgd.min.js"></script>
+        <script src="/static/_jejuya/js/jquery.mousewheel.min.js"></script>
+        <script src="/static/_jejuya/js/lightgallery-all.js"></script>
+        <script src="/static/_jejuya/js/wow.js"></script>
+        <script src="/static/_jejuya/js/prism.js"></script>
+        <script src="/static/_jejuya/js/xzoom.js"></script>
+        <script src="/static/_jejuya/js/jquery.hammer.min.js"></script>
+        <script src="/static/_jejuya/js/setup.js"></script>
+        <script src="/static/_jejuya/js/jarallax.min.js"></script>
+        <script src="/static/_jejuya/js/jarallax-video.js"></script>
+        <script src="/static/_jejuya/js/gsap.js"></script>
+        <script src="/static/_jejuya/js/scrolltrigger.js"></script>
+        <script src="/static/_jejuya/js/splittext.js"></script>
+        <script src="/static/_jejuya/js/gsap-animation.js"></script>
+        <script src="/static/_jejuya/js/custom.js"></script>
+        <script src="/static/_jejuya/js/main.js"></script>
+        <script src="//cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+        <script src="/static/quform/js/plugins.js"></script>
+        <script src="/static/quform/js/scripts.js"></script>
+        <script src="/static/search/search.js"></script>
+        <!-- media -->
+        <script>
+            const preview0Box = document.getElementById("preview0");
+            const preview1Box = document.getElementById("preview1");
+            const preview2Box = document.getElementById("preview2");
+            const preview3Box = document.getElementById("preview3");
+            const preview4Box = document.getElementById("preview4");
+            const preview5Box = document.getElementById("preview5");
+            const imagesInput = document.getElementById("images");
+            const multifulImageBox = document.getElementById('multifulImage');
+            const imageUploadBox = document.getElementById('imageUpload');
+            let uploadedFiles = [];
+
+            imagesInput.addEventListener('change', function () {
+                const filesArray = Array.from(imagesInput.files);
+                filesArray.sort((a, b) => a.name.localeCompare(b.name));
+                for (let i = 0; i < 5; i++) {
+                    if (filesArray[i] && checkImage(filesArray[i])) {
+                        const reader = new FileReader();
+                        reader.onload = function (e) {
+                            document.querySelectorAll(`.preview${i}>div>div`).forEach((el) => {
+                                el.style.background = `url(${e.target.result}) center/contain no-repeat grey`;
+                            });
+                            document.querySelectorAll(`.preview5>div>div`).forEach((el) => {
+                                el.style.background = `url(${e.target.result}) center/contain no-repeat grey`;
+                            });
+                        };
+                        reader.readAsDataURL(filesArray[i]);
+                        uploadedFiles.push(filesArray[i]);
+                    } else {
+                        document.querySelectorAll(`.preview${i}>div>div`).forEach((el) => {
+                            el.style.background = 'url() center/contain no-repeat grey';
+                        });
+                    }
+                }
+            });
+
+            function deleteImage(index) {
+                uploadedFiles.splice(index, 1);
+                for (let i = 0; i < 5; i++) {
+                    if (i < uploadedFiles.length) {
+                        const file = uploadedFiles[i];
+                        const reader = new FileReader();
+                        reader.onload = function (e) {
+                            document.querySelectorAll(`.preview${i}>div>div`).forEach((el) => {
+                                el.style.background = `url(${e.target.result}) center/contain no-repeat grey`;
+                            });
+                        };
+                        reader.readAsDataURL(file);
+                    } else {
+                        document.querySelectorAll(`.preview${i}>div>div`).forEach((el) => {
+                            el.style.background = 'url() center/contain no-repeat grey';
+                        });
+                    }
+                }
+            }
+        </script>
+        <!-- wysiwyg -->
+        <script>
+            document.getElementById('fontSize').addEventListener('change', function() {
+                formatText('fontSize', this.value);
+            });
+            function formatText(command) {
+                if (command === 'fontSize') {
+                    document.execCommand('fontSize', false, arguments[1]);
+                } else {
+                    document.execCommand(command, false, null);
+                    const buttonId = command + 'ToggleButton';
+                    const button = document.getElementById(buttonId);
+                    button.classList.toggle('toggle-active');
+                }
+                document.getElementById('content').focus();
+            }
+            document.getElementById('content').addEventListener('paste', function(e) {
+                e.preventDefault();
+                var text = (e.originalEvent || e).clipboardData.getData('text/plain');
+                document.execCommand('insertText', false, text);
+            });
+        </script>
+        <script>
+            // variables
+            var pointId = '';
+            var map = new naver.maps.Map(document.getElementById("map"),
+                {
+                    center: new naver.maps.LatLng(38, 127), zoom: 16
+                }
+            );
+            var marker = new naver.maps.Marker({
+                map: map,
+                position: new naver.maps.LatLng(38, 127),
+                title: '38-127 마커'
+            });
+
+            // const
+            const nameInput = document.getElementById('name');
+            const telInput = document.getElementById('tel');
+            const roomCntInput = document.getElementById('room_cnt');
+            const addressInput = document.getElementById('address');
+            const contentInput = document.getElementById('content');
+
+            // functions
+            window.onload = () => {
+                console.log(`Window loaded at ${getNowDt()}`);
+            }
+
+            addCSV = async () => {
+                var csvText = document.getElementById('csvText').value;
+                for (var i = 0; i < csvText.split(',').length; i += 7) {
+                    try{
+                        var name = csvText.split(',')[i];
+                        var address = csvText.split(',')[i + 1];
+                        var lat = csvText.split(',')[i + 2];
+                        var lng = csvText.split(',')[i + 3];
+                        var rooms_cnt = csvText.split(',')[i + 4];
+                        var tel = csvText.split(',')[i + 5];
+                        var note = csvText.split(',')[i + 6];
+
+                        await setData({
+                            model: 'POINT',
+                            id: '',
+                            field_value: JSON.stringify({
+                                name: name,
+                                address: address,
+                                latitude: lat,
+                                longitude: lng,
+                                rooms_cnt: rooms_cnt,
+                                tel: tel,
+                                note: note,
+                                medias: '',
+                            })
+                        })
+                    } catch (error) {
+                        console.error('Error:', error);
+                    }
+                }
+                alert('추가 완료');
+            }
+
+            rewriteMedia = (id) => {
+                pointId = id;
+                setTimeout(() => {
+                    new bootstrap.Modal(document.getElementById('mediaModal')).show();
+                }, 500);
+            }
+
+            setMedia = async () => {
+                var filepaths = '';
+                if(uploadedFiles.length === 0) {
+                    if (!confirm('이미지를 등록하지 않았습니다. 계속하시겠습니까?')) {
+                        console.log('업로드 취소됨');
+                        return;
+                    }
+                } else {
+                    for (let file of uploadedFiles) {
+                        try {
+                            var filepathstring = await uploadFile(file);
+                            filepaths += filepathstring + ',';
+                        } catch (error) {
+                            console.error("File upload failed:", error);
+                        }
+                    }
+                    if (filepaths.length > 0) {
+                        filepaths = filepaths.slice(0, -1);
+                    }
+                }
+                console.log('filepaths:', filepaths);
+
+                await getData({
+                    model: 'POINT',
+                    id: pointId,
+                }).then(async (data) => {
+                    var dbData = JSON.parse(data.db);
+                    var pk = dbData[0].pk;
+                    var fields = dbData[0].fields;
+
+                    await setData({
+                        model: 'POINT',
+                        id: pk,
+                        field_value: JSON.stringify({
+                            name: fields.name,
+                            address: fields.address,
+                            address_detail: fields.address_detail,
+                            latitude: fields.latitude,
+                            longitude: fields.longitude,
+                            rooms_cnt: fields.rooms_cnt,
+                            tel: fields.tel,
+                            note: fields.note,
+                            medias: filepaths,
+                        })
+                    }).then(() => {
+                        Swal.fire({
+                            html: `
+                            <div>
+                                <div class="text-center py-4">
+                                    <h1 class="text-dark">포인트 수정 완료</h1>
+                                </div>
+                                <diV class="text-start">
+                                    <p class="text-secondary">
+                                        포인트 이미지가 수정되었습니다.
+                                    </p>
+                                </div>
+                            </div>`,
+                            icon: `success`,
+                            showConfirmButton: true,
+                            confirmButtonText: `확인`,
+                            showCancelButton: false,
+                            cancelButtonText: ``
+                        }).then(() => {
+                            window.location.href = `/supervisor_points`;
+                        });
+                    })
+                })
+            }
+
+            initPoints = async () => {
+                await Swal.fire({
+                    html: `
+                    <div>
+                        <div class="text-center py-4">
+                            <h1 class="text-dark">테이블 초기화</h1>
+                        </div>
+                        <diV class="text-start">
+                            <p class="text-secondary">
+                                포인트 테이블을 초기화하시겠습니까?
+                            </p>
+                        </div>
+                    </div>`,
+                    icon: `warning`,
+                    showConfirmButton: true,
+                    confirmButtonText: `초기화`,
+                    confirmButtonColor: `#dc3545`,
+                    showCancelButton: true,
+                    cancelButtonText: `취소`,
+                }).then(async (result) => {
+                    if (result.isConfirmed) {
+                        await fetch('/api/delete_all_points');
+                        window.location.reload();
+                    }
+                });
+            }
+
+            rewritePoint = async (id) => {
+                pointId = id;
+                await getData({
+                    model: 'POINT',
+                    id: pointId,
+                }).then(async (data) => {
+                    var dbData = JSON.parse(data.db);
+                    var fields = dbData[0].fields;
+                    var pk = dbData[0].pk;
+
+                    nameInput.value = fields.name;
+                    telInput.value = fields.tel;
+                    roomCntInput.value = fields.rooms_cnt;
+                    addressInput.value = fields.address;
+                    contentInput.innerHTML = fields.note;
+                    new bootstrap.Modal(document.getElementById('rewritePoint')).show();
+                })
+            }
+
+            setPoint = async () => {
+                var name = nameInput.value;
+                var tel = telInput.value;
+                var roomCnt = roomCntInput.value;
+                var address = addressInput.value;
+                var content = contentInput.innerHTML;
+
+                if (!nameInput.value) {
+                    alert('포인트 이름을 입력해주세요.');
+                    return;
+                }
+                if (!addressInput.value) {
+                    alert('주소를 입력해주세요.');
+                    return;
+                }
+
+                await getData({
+                    model: 'POINT',
+                    id: pointId,
+                }).then(async (data) => {
+                    var dbData = JSON.parse(data.db);
+                    var pk = dbData[0].pk;
+                    var fields = dbData[0].fields;
+
+                    await setData({
+                        model: 'POINT',
+                        id: pk,
+                        field_value: JSON.stringify({
+                            name: name,
+                            address: address,
+                            rooms_cnt: roomCnt,
+                            tel: tel,
+                            note: content,
+                            medias: fields.medias,
+                        })
+                    }).then(() => {
+                        Swal.fire({
+                            html: `
+                            <div>
+                                <div class="text-center py-4">
+                                    <h1 class="text-dark">포인트 수정 완료</h1>
+                                </div>
+                                <diV class="text-start:">
+                                    <p class="text-secondary">
+                                        포인트 정보가 수정되었습니다.
+                                    </p>
+                                </div>
+                            </div>`,
+                            icon: `success`,
+                            showConfirmButton: true,
+                            confirmButtonText: `확인`,
+                            showCancelButton: false,
+                            cancelButtonText: ``
+                        }).then(() => {
+                            window.location.href = `/supervisor_points`;
+                        });
+                    })
+                })
+            }
+
+            setPointLocation = (lat, lng, address) => {
+                var new_positions = new naver.maps.LatLng(lat, lng);
+                map.setCenter(new_positions);
+                marker.setPosition(new_positions);
+
+                new bootstrap.Modal(document.getElementById('pointLocation')).show();
+            }
+        </script>
+    </body>
+
+</html>

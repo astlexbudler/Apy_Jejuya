@@ -1,0 +1,247 @@
+<!DOCTYPE html>
+<html lang="ko">
+    {% load static %}
+    {% csrf_token %}
+
+    <head>
+
+        <meta name="robots" content="noindex, nofollow">
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge"/>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+
+        <title>제주야</title>
+
+        <!-- favicon
+        ================================================== -->
+        <link rel="icon" type="image/png" href="/static/_jejuya/img/logos/favicon.png">
+        <link rel="shortcut icon" href="/static/_jejuya/img/logos/favicon.png" />
+        <link rel="apple-touch-icon" href="/static/_jejuya/img/logos/apple-touch-icon-57x57.png" />
+        <link rel="apple-touch-icon" sizes="72x72" href="/static/_jejuya/img/logos/apple-touch-icon-72x72.png" />
+        <link rel="apple-touch-icon" sizes="114x114" href="/static/_jejuya/img/logos/apple-touch-icon-114x114.png" />
+
+        <!-- style
+        ================================================== -->
+        <link rel="stylesheet" href="/static/_jejuya/css/plugins.css"/>
+        <link rel="stylesheet" href="/static/_jejuya/css/custom.css"/>
+        <link rel="stylesheet" href="/static/_jejuya/css/styles.css"/>
+        <link rel="stylesheet" href="/static/_jejuya/css/index.css"/>
+        <link rel="stylesheet" href="/static/search/search.css"/>
+        <link rel="stylesheet" href="/static/quform/css/base.css"/>
+
+        <!-- 네이버 지도 -->
+        <script type="text/javascript" src="https://openapi.map.naver.com/openapi/v3/maps.js?ncpClientId="></script>
+
+        <!-- full calendar -->
+        <link href='https://cdnjs.cloudflare.com/ajax/libs/fullcalendar/4.2.0/core/main.min.css' rel='stylesheet' />
+        <script src='https://cdnjs.cloudflare.com/ajax/libs/fullcalendar/4.2.0/core/main.min.js'></script>
+        <script src='https://cdnjs.cloudflare.com/ajax/libs/fullcalendar/4.2.0/interaction/main.min.js'></script>
+        <script src='https://cdnjs.cloudflare.com/ajax/libs/fullcalendar/4.2.0/daygrid/main.min.js'></script>
+
+    </head>
+
+    <body style="word-break: keep-all;" class="bg-white">
+
+        <!-- PAGE LOADING ================================================== -->
+        <div id="preloader"></div>
+
+        <!-- MAIN WRAPPER ================================================== -->
+        <div class="main-wrapper">
+
+            <!-- HEADER
+            ================================================== -->
+            {% include "_jejuya/parts/header.html" %}
+
+            <!-- MAIN SECTION
+            ================================================== -->
+            <div id="map" style="width:100%; height: calc(100vh - 70px);">
+
+                <!-- 지도 헤더 -->
+                <div class="keyword-wrapper">
+                    <div class="keywords-container">
+                        <a class="small" href="javascript: window.history.back();">
+                            < 뒤로가기
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        {% include "_jejuya/offcanvas/point.html" %}
+        {% include "_jejuya/offcanvas/around.html" %}
+
+        <script src="/static/_jejuya/js/jquery.min.js"></script>
+        <script src="/static/_jejuya/js/popper.min.js"></script>
+        <script src="/static/_jejuya/js/bootstrap.min.js"></script>
+        <script src="/static/_jejuya/js/scrollIt.min.js"></script>
+        <script src="/static/_jejuya/js/nav-menu.js"></script>
+        <script src="/static/_jejuya/js/easy.responsive.tabs.js"></script>
+        <script src="/static/_jejuya/js/owl.carousel.js"></script>
+        <script src="/static/_jejuya/js/owl.carousel.thumbs.js"></script>
+        <script src="/static/_jejuya/js/animated-headline.js"></script>
+        <script src="/static/_jejuya/js/jquery.counterup.min.js"></script>
+        <script src="/static/_jejuya/js/jquery.stellar.min.js"></script>
+        <script src="/static/_jejuya/js/waypoints.min.js"></script>
+        <script src="/static/_jejuya/js/countdown.js"></script>
+        <script src="/static/_jejuya/js/clipboard.min.js"></script>
+        <script src="/static/_jejuya/js/jquery.magnific-popup.min.js"></script>
+        <script src="/static/_jejuya/js/isotope.pkgd.min.js"></script>
+        <script src="/static/_jejuya/js/jquery.mousewheel.min.js"></script>
+        <script src="/static/_jejuya/js/lightgallery-all.js"></script>
+        <script src="/static/_jejuya/js/wow.js"></script>
+        <script src="/static/_jejuya/js/prism.js"></script>
+        <script src="/static/_jejuya/js/xzoom.js"></script>
+        <script src="/static/_jejuya/js/jquery.hammer.min.js"></script>
+        <script src="/static/_jejuya/js/setup.js"></script>
+        <script src="/static/_jejuya/js/jarallax.min.js"></script>
+        <script src="/static/_jejuya/js/jarallax-video.js"></script>
+        <script src="/static/_jejuya/js/gsap.js"></script>
+        <script src="/static/_jejuya/js/scrolltrigger.js"></script>
+        <script src="/static/_jejuya/js/splittext.js"></script>
+        <script src="/static/_jejuya/js/gsap-animation.js"></script>
+        <script src="/static/_jejuya/js/custom.js"></script>
+        <script src="/static/_jejuya/js/main.js"></script>
+        <script src="//cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+        <script src="/static/quform/js/plugins.js"></script>
+        <script src="/static/quform/js/scripts.js"></script>
+        <script src="/static/search/search.js"></script>
+        <script>
+
+            // offcanvas 설정
+            var offcanvasPointElement = document.getElementById('offcanvas-point');
+            var offcanvasPoint = new bootstrap.Offcanvas(offcanvasPointElement, {
+                backdrop: true
+            });
+            var offcanvasAroundElement = document.getElementById('offcanvas-around');
+            var offcanvasAround = new bootstrap.Offcanvas(offcanvasAroundElement, {
+                backdrop: true
+            });
+
+            // 지도 설정. 선택된 point를 중심으로 지도를 보여줌
+            var map = new naver.maps.Map(document.getElementById("map"),
+                {
+                    center: new naver.maps.LatLng({{schedule.items.0.around.latitude}}, {{schedule.items.0.around.longitude}}), zoom: 12
+                }
+            );
+
+            // point 마커 HTML
+            var pointMarkerHtml = `
+                <div class="border bg-white p-1 px-2" style="font-size: 11px; white-space: nowrap; border-radius: 15px;">
+                    <i class="fa-lg fa-solid fa-location-crosshairs text-primary"></i> {name}
+                </div>
+            `;
+
+            // around 마커 HTML
+            var aroundMarkerHtml = `
+                <div class="border bg-white p-1 px-2" style="font-size: 11px; white-space: nowrap; border-radius: 15px;">
+                    <i class="fa-lg fa-solid fa-location-dot text-warning"></i> {name}
+                </div>
+            `;
+
+            // 검색 반경 설정
+            searchDistance = () => {
+                var distance = document.getElementById('distanceRange').value;
+                window.location.href = `/point_around?point_id={{point.id}}&distance=${distance}&point_type={{request.GET.point_type}}`;
+            }
+
+            // 검색 타입 설정
+            searchType = (type) => {
+                window.location.href = `/point_around?point_id={{point.id}}&distance={{distance}}&point_type=${type}`;
+            }
+
+            ////////// 지도에 마커 생성 및 이벤트 설정 //////////
+            // point 마커 생성
+            // point: id, name, latitude, longitude, tel, rooms_cnt, address, note, medias
+            var markerPoint = new naver.maps.Marker({
+                map: map,
+                position: new naver.maps.LatLng({{schedule.items.0.around.latitude}}, {{schedule.items.0.around.longitude}}),
+                title: '{{schedule.items.0.around.name}}',
+                icon: {
+                    content: pointMarkerHtml.replace('{name}', '{{schedule.items.0.around.name}}({{schedule.items.0.around.rooms_cnt}})'),
+                    anchor: new naver.maps.Point(12, 12),
+                    size: new naver.maps.Size(24, 37),
+                }
+            });
+
+            // point 마커 클릭 이벤트
+            markerPoint.addListener('click', function(e) {
+                console.log(`${e.overlay.title} 마커 클릭됨`);
+                document.getElementById('pointName').innerText = '{{schedule.items.0.around.name}}';
+                document.getElementById('pointRoomsCnt').innerText = `객실 수: {{schedule.items.0.around.rooms_cnt}}`;
+                document.getElementById('pointDescription').innerHTML = '{{schedule.items.0.around.note}}';
+                document.getElementById('pointAddress').innerHTML = '<i class="fa-solid fa-location-dot"></i> {{schedule.items.0.around.address}}';
+                document.getElementById('pointTel').innerHTML = '<i class="fa-solid fa-phone"></i> {{schedule.items.0.around.tel}}';
+                document.getElementById('pointTel').href = 'tel:{{schedule.items.0.around.tel}}';
+                {% if schedule.items.0.around.medias|length < 1 or schedule.items.0.around.medias.0 == '' %}
+                document.getElementById('pointMediaCarousel').style.display = 'none';
+                {% else %}
+                document.getElementById('pointMediaCarousel').style.display = 'block';
+                medias = [
+                    {% for media in schedule.items.0.around.medias %}
+                    '{{media}}',
+                    {% endfor %}
+                ]
+                document.querySelectorAll('.carouselItemDisplay').forEach((item) => {
+                    item.style.background = `url('${medias[0]}') center/contain no-repeat`;
+                });
+                for (var i = 0; i < medias.length; i++) {
+                    document.querySelectorAll('.carouselItemDisplay' + i).forEach((item) => {
+                        item.style.background = `url('${medias[i]}') center/contain no-repeat`;
+                    });
+                }
+                {% endif %}
+                document.getElementById('aroundSearchButton').style.display = 'none';
+                offcanvasPoint.show();
+            });
+
+            // around 마커 생성(Django)
+            {% for item in schedule.items %}
+            {% if forloop.counter > 1 %}
+            var marker{{forloop.counter}} = new naver.maps.Marker({
+                map: map,
+                position: new naver.maps.LatLng({{item.around.latitude}}, {{item.around.longitude}}),
+                title: '{{item.around.name}}',
+                icon: {
+                    content: aroundMarkerHtml.replace('{name}', '{{item.around.name}}({{item.around.around_type}})'),
+                    anchor: new naver.maps.Point(12, 12),
+                    size: new naver.maps.Size(24, 37),
+                }
+            });
+
+            marker{{forloop.counter}}.addListener('click', function(e) {
+                console.log(`${e.overlay.title} 마커 클릭됨`);
+                document.getElementById('aroundName').innerText = '{{item.around.name}}';
+                document.getElementById('aroundOpenHoliday').innerText = `영업시간: {{item.around.open_time}} / 휴무일: {{item.around.holiday}}`;
+                document.getElementById('aroundDescription').innerHTML = '{{item.around.note}}';
+                document.getElementById('aroundAddress').innerHTML = '<i class="fa-solid fa-location-dot"></i> {{item.around.address}}';
+                document.getElementById('aroundTel').innerHTML = '<i class="fa-solid fa-phone"></i> {{item.around.tel}}';
+                document.getElementById('aroundTel').href = 'tel:{{item.around.tel}}';
+                {% if item.around.medias|length < 1 or item.around.medias.0 == '' %}
+                document.getElementById('aroundMediaCarousel').style.display = 'none';
+                {% else %}
+                document.getElementById('aroundMediaCarousel').style.display = 'block';
+                medias = [
+                    {% for media in item.around.medias %}
+                    '{{media}}',
+                    {% endfor %}
+                ]
+                document.querySelectorAll('.carouselItemDisplay').forEach((item) => {
+                    item.style.background = `url('${medias[0]}') center/contain no-repeat`;
+                });
+                for (var i = 0; i < medias.length; i++) {
+                    document.querySelector('.carouselItemDisplay' + i).style.background = `url('${medias[i]}') center/contain no-repeat`;
+                }
+                {% endif %}
+                document.getElementById('aroundReserve').style.display = 'none';
+                document.getElementById('aroundAdd').style.display = 'none';
+
+                offcanvasAround.show();
+            });
+            {% endif %}
+            {% endfor %}
+            // *마커 및 이벤트 설정 끝*
+
+        </script>
+    </body>
+
+</html>

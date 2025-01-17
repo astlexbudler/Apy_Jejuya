@@ -1,0 +1,284 @@
+<!DOCTYPE html>
+<html lang="ko">
+    {% load static %}
+    {% csrf_token %}
+
+    <head>
+
+        <meta name="robots" content="noindex, nofollow">
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge"/>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+
+        <title>제주야</title>
+
+        <!-- favicon
+        ================================================== -->
+        <link rel="icon" type="image/png" href="/static/_jejuya/img/logos/favicon.png">
+        <link rel="shortcut icon" href="/static/_jejuya/img/logos/favicon.png" />
+        <link rel="apple-touch-icon" href="/static/_jejuya/img/logos/apple-touch-icon-57x57.png" />
+        <link rel="apple-touch-icon" sizes="72x72" href="/static/_jejuya/img/logos/apple-touch-icon-72x72.png" />
+        <link rel="apple-touch-icon" sizes="114x114" href="/static/_jejuya/img/logos/apple-touch-icon-114x114.png" />
+
+        <!-- style
+        ================================================== -->
+        <link rel="stylesheet" href="/static/_jejuya/css/plugins.css"/>
+        <link rel="stylesheet" href="/static/_jejuya/css/custom.css"/>
+        <link rel="stylesheet" href="/static/_jejuya/css/styles.css"/>
+        <link rel="stylesheet" href="/static/_jejuya/css/index.css"/>
+        <link rel="stylesheet" href="/static/search/search.css"/>
+        <link rel="stylesheet" href="/static/quform/css/base.css"/>
+
+        <!-- 네이버 지도 -->
+        <script type="text/javascript" src="https://openapi.map.naver.com/openapi/v3/maps.js?ncpClientId="></script>
+
+    </head>
+
+    <body style="word-break: keep-all;" class="bg-white">
+
+        <!-- PAGE LOADING ================================================== -->
+        <div id="preloader"></div>
+
+        <!-- MAIN WRAPPER ================================================== -->
+        <div class="main-wrapper">
+
+            <!-- HEADER
+            ================================================== -->
+            {% include "_jejuya/parts/header.html" %}
+
+            <!-- 검색창 -->
+            <div class="form-group position-relative m-0" onkeyup="if(event.keyCode == 13) trySearch();">
+                <input id="searchKeyword" class="form-control" style="border-radius: 0px;" placeholder="검색어를 입력해주세요." value="{{request.GET.search}}">
+                <a href="javascript: trySearch();" class="position-absolute" style="right: 15px; top: 50%; transform: translateY(-50%); font-size: 24px;">
+                    <i class="fa-solid fa-search"></i>
+                </a>
+            </div>
+
+            <!-- MAIN SECTION
+            ================================================== -->
+            <div id="map" style="width:100%; height: calc(100vh - 120px);">
+
+                <!-- 지도 헤더 -->
+                <div class="keyword-wrapper">
+                    <div class="keywords-container">
+                        <p class="m-0" style="font-size: 12px;">
+                            <i class="fa-solid fa-location-dot"></i> 현재 위치: <span id="currentPosition">위치를 찾는 중...</span>
+                        </p>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+
+        <!--fixed button-->
+        <div style="position: fixed; z-index: 999; left: 10px; bottom: 20px;" id="myLocationButton">
+            <a class="btn btn-primary p-1 text-white" href="javascript: setNowLocation();">
+                <i class="fa-solid fa-location-dot"></i> 내 위치
+            </a>
+        </div>
+
+        {% include "_jejuya/offcanvas/point.html" %}
+
+        <script src="/static/_jejuya/js/jquery.min.js"></script>
+        <script src="/static/_jejuya/js/popper.min.js"></script>
+        <script src="/static/_jejuya/js/bootstrap.min.js"></script>
+        <script src="/static/_jejuya/js/scrollIt.min.js"></script>
+        <script src="/static/_jejuya/js/nav-menu.js"></script>
+        <script src="/static/_jejuya/js/easy.responsive.tabs.js"></script>
+        <script src="/static/_jejuya/js/owl.carousel.js"></script>
+        <script src="/static/_jejuya/js/owl.carousel.thumbs.js"></script>
+        <script src="/static/_jejuya/js/animated-headline.js"></script>
+        <script src="/static/_jejuya/js/jquery.counterup.min.js"></script>
+        <script src="/static/_jejuya/js/jquery.stellar.min.js"></script>
+        <script src="/static/_jejuya/js/waypoints.min.js"></script>
+        <script src="/static/_jejuya/js/countdown.js"></script>
+        <script src="/static/_jejuya/js/clipboard.min.js"></script>
+        <script src="/static/_jejuya/js/jquery.magnific-popup.min.js"></script>
+        <script src="/static/_jejuya/js/isotope.pkgd.min.js"></script>
+        <script src="/static/_jejuya/js/jquery.mousewheel.min.js"></script>
+        <script src="/static/_jejuya/js/lightgallery-all.js"></script>
+        <script src="/static/_jejuya/js/wow.js"></script>
+        <script src="/static/_jejuya/js/prism.js"></script>
+        <script src="/static/_jejuya/js/xzoom.js"></script>
+        <script src="/static/_jejuya/js/jquery.hammer.min.js"></script>
+        <script src="/static/_jejuya/js/setup.js"></script>
+        <script src="/static/_jejuya/js/jarallax.min.js"></script>
+        <script src="/static/_jejuya/js/jarallax-video.js"></script>
+        <script src="/static/_jejuya/js/gsap.js"></script>
+        <script src="/static/_jejuya/js/scrolltrigger.js"></script>
+        <script src="/static/_jejuya/js/splittext.js"></script>
+        <script src="/static/_jejuya/js/gsap-animation.js"></script>
+        <script src="/static/_jejuya/js/custom.js"></script>
+        <script src="/static/_jejuya/js/main.js"></script>
+        <script src="//cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+        <script src="/static/quform/js/plugins.js"></script>
+        <script src="/static/quform/js/scripts.js"></script>
+        <script src="/static/search/search.js"></script>
+        <script>
+
+            // offcanvas 설정
+            var offcanvasPointElement = document.getElementById('offcanvas-point');
+            var offcanvasPoint = new bootstrap.Offcanvas(offcanvasPointElement, {
+                backdrop: true
+            });
+
+            // 지도 설정
+            var map = new naver.maps.Map(document.getElementById("map"),
+                {
+                    center: new naver.maps.LatLng(33.3625, 126.5333), zoom: 12
+                }
+            );
+
+            // 지도 이동 함수
+            setMap = (lat, lng) => {
+                var new_positions = new naver.maps.LatLng(lat, lng);
+                map.setCenter(new_positions);
+            }
+
+            // point 마커 HTML
+            var pointMarkerHtml = `
+                <div class="border bg-white p-1 px-2" style="font-size: 11px; white-space: nowrap; border-radius: 15px;">
+                    <i class="fa-lg fa-solid fa-location-dot text-primary"></i> {name}
+                </div>
+            `;
+
+            window.onload = () => {
+                console.log(`Window loaded at ${getNowDt()}`);
+
+                // User Agent 확인
+                var userAgent = navigator.userAgent || navigator.vendor || window.opera;
+
+                // iOS 확인
+                if (/iPad|iPhone|iPod/.test(userAgent) && !window.MSStream) {
+                    // iOS인 경우 버튼 숨기기
+                    var myLocationButton = document.getElementById("myLocationButton");
+                    if (myLocationButton) {
+                        myLocationButton.style.display = "none";
+                    }
+                }
+
+                /*
+                // 현재 위치 찾기(브라우저 위치 정보 사용)
+                if (navigator.geolocation) {
+                    navigator.geolocation.getCurrentPosition((position) => {
+                        const lat = position.coords.latitude;
+                        const lng = position.coords.longitude;
+
+                        console.log(`현재 위치: ${lat}, ${lng}`);
+
+                        // 제주도 좌표 범위
+                        const jejuLatMin = 33.1;
+                        const jejuLatMax = 33.6;
+                        const jejuLngMin = 126.1;
+                        const jejuLngMax = 126.9;
+
+                        // 사용자가 제주도 내에 있는지 확인
+                        if (lat >= jejuLatMin && lat <= jejuLatMax && lng >= jejuLngMin && lng <= jejuLngMax) {
+                            console.log('사용자의 위치가 제주도 내에 있습니다.');
+                            setMap(lat, lng);  // 제주도 내에 있을 경우에만 지도 설정
+                        } else {
+                            console.log('사용자의 위치가 제주도 바깥입니다.');
+                        }
+                    });
+                } else {
+                    console.log('브라우저 위치 정보 사용 불가');
+                }*/
+            };
+
+            // 현재 위치로 이동 버튼 클릭 이벤트
+            setNowLocation = () => {
+                if (navigator.geolocation) {
+                    navigator.geolocation.getCurrentPosition((position) => {
+                        const lat = position.coords.latitude;
+                        const lng = position.coords.longitude;
+                        setMap(lat, lng);
+                    });
+                } else {
+                    console.log('브라우저 위치 정보 사용 불가');
+                }
+            }
+
+            // 좌표 및 주소 정보를 상단에 표시
+            setCurrentLocationText = (lat, lng) => {
+                fetch('/api/coords_to_address?latitude=' + lat + '&longitude=' + lng)
+                .then(response => response.json())
+                .then(data => {
+                    console.log(data);
+                    var address = data.address;
+                    document.getElementById('currentPosition').innerText = data.address + ` (${lat}, ${lng})`;
+                });
+            }
+
+            // 검색어로 검색
+            trySearch = () => {
+                let keyword = document.getElementById('searchKeyword').value;
+                window.location.href = '/?search=' + keyword;
+            }
+
+            ////////// 지도에 마커 생성 및 이벤트 설정 //////////
+            // point 목록을 지도에 표시(Django)
+            // point: id, name, latitude, longitude, tel, rooms_cnt, address, note, medias
+            {% for point in points %}
+
+            // 객실 수가 0이 아닌 경우에만 마커 표시
+            {% if rooms_cnt != '0' %}
+            // 마커 생성
+            var marker{{forloop.counter}} = new naver.maps.Marker({
+                map: map,
+                position: new naver.maps.LatLng({{point.latitude}}, {{point.longitude}}),
+                title: '{{point.name}}',
+                icon: {
+                    content: pointMarkerHtml.replace('{name}', '{{point.name}}({{point.rooms_cnt}})'),
+                    anchor: new naver.maps.Point(12, 12),
+                    size: new naver.maps.Size(24, 37),
+                }
+            });
+
+            // 마커 클릭 이벤트 설정
+            marker{{forloop.counter}}.addListener('click', function(e) {
+                console.log(`${e.overlay.title} 마커 클릭됨`);
+                document.getElementById('pointName').innerText = '{{point.name}}';
+                document.getElementById('pointRoomsCnt').innerText = `객실 수: {{point.rooms_cnt}}`;
+                document.getElementById('pointDescription').innerHTML = '{{point.note}}';
+                document.getElementById('pointAddress').innerHTML = '<i class="fa-solid fa-location-dot"></i> {{point.address}}';
+                document.getElementById('pointTel').innerHTML = '<i class="fa-solid fa-phone"></i> {{point.tel}}';
+                document.getElementById('pointTel').href = 'tel:{{point.tel}}';
+                {% if point.medias|length < 1 or point.medias.0 == '' %}
+                document.getElementById('pointMediaCarousel').style.display = 'none';
+                {% else %}
+                document.getElementById('pointMediaCarousel').style.display = 'block';
+                medias = [
+                    {% for media in point.medias %}
+                    '{{media}}',
+                    {% endfor %}
+                ]
+                document.querySelectorAll('.carouselItemDisplay').forEach((item) => {
+                    item.style.background = `url('${medias[0]}') center/contain no-repeat`;
+                });
+                for (var i = 0; i < medias.length; i++) {
+                    document.querySelectorAll('.carouselItemDisplay' + i).forEach((item) => {
+                        item.style.background = `url('${medias[i]}') center/contain no-repeat`;
+                    });
+                }
+                {% endif %}
+                document.getElementById('aroundSearchButton').href = '/point_around?point_id={{point.id}}';
+                offcanvasPoint.show();
+            });
+            {% endif %}
+            {% endfor %}
+            // *마커 및 이벤트 설정 끝*
+
+            // 지도 드래그 이벤트 설정
+            naver.maps.Event.addListener(map, 'dragend', function(e) {
+                console.log(`지도 드래그 종료 현재 위치: ${map.getCenter().x}, ${map.getCenter().y}`);
+                let lat = map.getCenter().y;
+                let lng = map.getCenter().x;
+
+                // 변경된 위치의 주소 및 좌표 정보를 화면 상단에 표시
+                setCurrentLocationText(lat, lng);
+            });
+
+        </script>
+    </body>
+
+</html>

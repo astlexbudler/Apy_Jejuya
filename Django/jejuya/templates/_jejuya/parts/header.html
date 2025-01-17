@@ -1,0 +1,101 @@
+
+<header class="bg-white">
+    <div class="navbar-default">
+        <div class="container">
+            <div class="menu_area">
+                <nav class="navbar navbar-expand-lg navbar-light p-0">
+                    <div class="navbar-header navbar-header-custom">
+                        <a href="#!" data-scroll-nav="0" class="navbar-brand dark-logo">
+                            <div style="height: 35px"></div>
+                        </a>
+                    </div>
+                    <div id="logo" style="position: absolute; width: 235px; height: 60px; background: url('/static/_jejuya/img/icon/icon3.png') left/contain no-repeat; cursor: pointer;" onclick="document.location.href='/'">
+                        <h4 class="text-dark" style="padding-top: 18px; padding-left: 60px;">제주야</h4>
+                    </div>
+                    <div class="navbar-toggler" style="background-color: transparent;"></div>
+                    <ul class="navbar-nav ms-auto" id="nav">
+                        <li class="nav-item">
+                            <a class="nav-link" href="/">
+                                관광지 검색
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="/schedule">
+                                내 일정
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="/point_list">
+                                숙소 리스트
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="/around_list">
+                                관광지 리스트
+                            </a>
+                        </li>
+                        <li>
+                            <a href="#!">
+                                고객센터
+                            </a>
+                            <ul>
+                                <li>
+                                    <a  href="/contact">
+                                        이용문의
+                                    </a>
+                                </li>
+                                <li>
+                                    <a  href="javascript: window.open('/terms');">
+                                        이용약관 및 개인정보처리방침
+                                    </a>
+                                </li>
+                            </ul>
+                        </li>
+                    </ul>
+                    <div class="attr-nav">
+                        <ul>
+                            <li class="dropdown">
+                                <a href="#" class="dropdown-toggle text-dark" id="dropdownMenuLink" data-bs-toggle="dropdown">
+                                    <i class="fa-regular fa-calendar"></i>
+                                </a>
+                                <ul class="dropdown-menu cart-list bg-white">
+                                    <li class="total bg-warning">
+                                        <span class="pull-left" style="font-weight: bold;">
+                                            <i class="fa-regular fa-calendar"></i> 내 여행 일정
+                                        </span>
+                                    </li>
+                                    {% if schedules|length < 1 %}
+                                    <p class="text-center small mt-4">
+                                        일정이 없습니다.
+                                    </p>
+                                    {% endif %}
+                                    {% for schedule in schedules %}
+                                    <li class="text-start ps-0 py-2">
+                                        <p>
+                                            <a href="/schedule">
+                                                <span style="font-size: 12px;">{{schedule.items.0.around.name}}</span>
+                                                <br>
+                                                <span style=" margin-left: 24px; font-size: 14px;">
+                                                    < {{ schedule.date }}
+                                                </span>
+                                            </a>
+                                        </p>
+                                    </li>
+                                    {% endfor %}
+                                    <li class="total bg-warning">
+                                        <span class="pull-left" style="font-weight: bold;">
+                                            내 일정
+                                        </span>
+                                        <a href="/schedule" class="butn small white text-secondary">
+                                            더보기
+                                        </a>
+                                    </li>
+                                </ul>
+                            </li>
+                        </ul>
+                    </div>
+                </nav>
+            </div>
+        </div>
+    </div>
+</header>

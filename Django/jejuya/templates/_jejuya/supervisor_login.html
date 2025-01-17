@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html lang="ko">
+    {% load static %}
+    {% csrf_token %}
+
+    <head>
+
+        <meta name="robots" content="noindex, nofollow">
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge"/>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+
+        <title>제주야 관리자</title>
+
+        <!-- favicon
+        ================================================== -->
+        <link rel="icon" type="image/png" href="/static/_jejuya/img/logos/favicon.png">
+        <link rel="shortcut icon" href="/static/_jejuya/img/logos/favicon.png" />
+        <link rel="apple-touch-icon" href="/static/_jejuya/img/logos/apple-touch-icon-57x57.png" />
+        <link rel="apple-touch-icon" sizes="72x72" href="/static/_jejuya/img/logos/apple-touch-icon-72x72.png" />
+        <link rel="apple-touch-icon" sizes="114x114" href="/static/_jejuya/img/logos/apple-touch-icon-114x114.png" />
+
+        <!-- style
+        ================================================== -->
+        <link rel="stylesheet" href="/static/_jejuya/css/plugins.css"/>
+        <link rel="stylesheet" href="/static/_jejuya/css/custom.css"/>
+        <link rel="stylesheet" href="/static/_jejuya/css/styles.css"/>
+        <link rel="stylesheet" href="/static/_jejuya/css/index.css"/>
+        <link rel="stylesheet" href="/static/search/search.css"/>
+        <link rel="stylesheet" href="/static/quform/css/base.css"/>
+
+    </head>
+
+    <body style="word-break: keep-all;" class="bg-white">
+
+        <!-- PAGE LOADING ================================================== -->
+        <div id="preloader"></div>
+
+        <!-- MAIN WRAPPER ================================================== -->
+        <div class="main-wrapper" style="min-height: 100vh;">
+
+            <!-- MAIN SECTION
+            ================================================== -->
+            <section class="bg-light p-0">
+                <div class="container d-flex flex-column">
+                    <div class="row align-items-center justify-content-center min-vh-100">
+                        <div class="col-12 col-lg-8">
+
+                            <div class="logo-index text-center">
+                                <h2>관리자</h2>
+                            </div>
+                            <div class="container">
+                                <div class="row" onkeydown="checkEnterKey(event);">
+                                    <div class="col-12">
+                                        <div class="form-group text-start">
+                                            <label>아이디</label>
+                                            <input class="form-control" id="id" placeholder="아이디를 입력해주세요">
+                                        </div>
+                                    </div>
+
+                                    <div class="col-12">
+                                        <div class="form-group text-start">
+                                            <label>비밀번호</label>
+                                            <input type="password" class="form-control" id="password" placeholder="비밀번호를 입력해주세요">
+                                            <small class="text-secondary">접속 아이피: {{ip}}</small>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="row mt-2">
+                                    <div class="col-md-12 center">
+                                        <button onclick="tryLogin();" class="butn style-one fill mt-4 mb-0 bg-primary col-12 col-lg-2">로그인</button>
+                                    </div>
+                                    <div class="col-md-12 center">
+                                        <button onclick="tryRegister()" class="butn style-one fill mt-4 mb-0 bg-secondary col-12 col-lg-2">생성하기</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+        </div>
+
+        <script src="/static/_jejuya/js/jquery.min.js"></script>
+        <script src="/static/_jejuya/js/popper.min.js"></script>
+        <script src="/static/_jejuya/js/bootstrap.min.js"></script>
+        <script src="/static/_jejuya/js/scrollIt.min.js"></script>
+        <script src="/static/_jejuya/js/nav-menu.js"></script>
+        <script src="/static/_jejuya/js/easy.responsive.tabs.js"></script>
+        <script src="/static/_jejuya/js/owl.carousel.js"></script>
+        <script src="/static/_jejuya/js/owl.carousel.thumbs.js"></script>
+        <script src="/static/_jejuya/js/animated-headline.js"></script>
+        <script src="/static/_jejuya/js/jquery.counterup.min.js"></script>
+        <script src="/static/_jejuya/js/jquery.stellar.min.js"></script>
+        <script src="/static/_jejuya/js/waypoints.min.js"></script>
+        <script src="/static/_jejuya/js/countdown.js"></script>
+        <script src="/static/_jejuya/js/clipboard.min.js"></script>
+        <script src="/static/_jejuya/js/jquery.magnific-popup.min.js"></script>
+        <script src="/static/_jejuya/js/isotope.pkgd.min.js"></script>
+        <script src="/static/_jejuya/js/jquery.mousewheel.min.js"></script>
+        <script src="/static/_jejuya/js/lightgallery-all.js"></script>
+        <script src="/static/_jejuya/js/wow.js"></script>
+        <script src="/static/_jejuya/js/prism.js"></script>
+        <script src="/static/_jejuya/js/xzoom.js"></script>
+        <script src="/static/_jejuya/js/jquery.hammer.min.js"></script>
+        <script src="/static/_jejuya/js/setup.js"></script>
+        <script src="/static/_jejuya/js/jarallax.min.js"></script>
+        <script src="/static/_jejuya/js/jarallax-video.js"></script>
+        <script src="/static/_jejuya/js/gsap.js"></script>
+        <script src="/static/_jejuya/js/scrolltrigger.js"></script>
+        <script src="/static/_jejuya/js/splittext.js"></script>
+        <script src="/static/_jejuya/js/gsap-animation.js"></script>
+        <script src="/static/_jejuya/js/custom.js"></script>
+        <script src="/static/_jejuya/js/main.js"></script>
+        <script src="//cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+        <script src="/static/quform/js/plugins.js"></script>
+        <script src="/static/quform/js/scripts.js"></script>
+        <script src="/static/search/search.js"></script>
+        <script>
+            // elements
+            const idInput = document.getElementById('id');
+            const passwordInput = document.getElementById('password');
+
+            // functions
+            window.onload = () => {
+                console.log(`Window loaded at ${getNowDt()}`);
+            }
+
+            function checkEnterKey(event) {
+                if (event.keyCode === 13) {
+                    tryLogin();
+                }
+            }
+
+            tryLogin = () => {
+                var id = idInput.value;
+                var password = passwordInput.value;
+
+                // fetch
+                var formData = new FormData();
+                formData.append("id", id);
+                formData.append("password", SHA256(password));
+                fetch("/api/login_supervisor", {
+                    method: "POST",
+                    body: formData,
+                    headers: {
+                        "X-CSRFToken": csrftoken
+                    }
+                })
+                .then((response) => response.json())
+                .then((data) => {
+                    var success = data["success"];
+                    if (success == 'n') {
+                        alert('로그인 실패');
+                    } else {
+                        window.location.href = "/supervisor";
+                    }
+                });
+            }
+
+            tryRegister = () => {
+                var id = idInput.value;
+                var password = passwordInput.value;
+
+                // fetch
+                var formData = new FormData();
+                formData.append("id", id);
+                formData.append("password", SHA256(password));
+                fetch("/api/write_supervisor", {
+                    method: "POST",
+                    body: formData,
+                    headers: {
+                        "X-CSRFToken": csrftoken
+                    }
+                })
+                .then((response) => response.json())
+                .then((data) => {
+                    var success = data["success"];
+                    if (success == 'n') {
+                        alert('등록 실패');
+                    } else {
+                        alert('등록 성공');
+                    }
+                    window.location.reload();
+                });
+            }
+        </script>
+
+    </body>
+
+</html>

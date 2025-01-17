@@ -1,0 +1,702 @@
+<!DOCTYPE html>
+<html lang="ko">
+    {% load static %}
+    {% csrf_token %}
+
+    <head>
+
+        <meta name="robots" content="noindex, nofollow">
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge"/>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+
+        <title>제주야</title>
+
+        <!-- style
+        ================================================== -->
+        <link rel="stylesheet" href="/static/_jejuya/css/plugins.css"/>
+        <link rel="stylesheet" href="/static/_jejuya/css/custom.css"/>
+        <link rel="stylesheet" href="/static/_jejuya/css/styles.css"/>
+        <link rel="stylesheet" href="/static/_jejuya/css/index.css"/>
+        <link rel="stylesheet" href="/static/search/search.css"/>
+        <link rel="stylesheet" href="/static/quform/css/base.css"/>
+
+        <!-- 네이버 지도 -->
+        <script type="text/javascript" src="https://openapi.map.naver.com/openapi/v3/maps.js?ncpClientId="></script>
+
+        <!-- 달력 -->
+        <link rel="stylesheet" href="/static/_jejuya/css/calendarwidget.css"/>
+
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+        <style>
+            .dragging {
+                opacity: 0.5;
+            }
+        </style>
+
+    </head>
+
+    <body style="word-break: keep-all;" class="bg-white">
+
+        <!-- PAGE LOADING ================================================== -->
+        <div id="preloader"></div>
+
+        <!-- MAIN WRAPPER ================================================== -->
+        <div class="main-wrapper">
+
+            <!-- HEADER
+            ================================================== -->
+            {% include "_jejuya/parts/header.html" %}
+
+            <!-- MAIN SECTION
+            ================================================== -->
+            <section class="m-0 p-0 mb-4" style="min-height: 100vh;">
+                <div class="container">
+
+                    <!-- 스케줄 리스트(아코디언) -->
+                    <div class="pt-2">
+
+                        {% if schedules|length == 0 %}
+                        <p class="text-center mt-5">
+                            일정이 없습니다. 일정을 추가해주세요.
+                        </p>
+                        {% endif %}
+                        {% for schedule in schedules %}
+                        <div id="accordion{{forloop.counter0}} mb-3" class="accordion-style01">
+                            <div class="card">
+                                <div class="card-header" id="heading{{forloop.counter0}}">
+                                    <div class="mb-0">
+                                        <h5 class="btn btn-link" data-bs-toggle="collapse" data-bs-target="#collapse{{forloop.counter0}}" aria-expanded="true" aria-controls="collapse{{forloop.counter0}}">
+                                            {{schedule.date}} {{schedule.items.0.around.name}}
+                                        </h5>
+                                    </div>
+                                </div>
+                                <div id="collapse{{forloop.counter0}}" class="collapse show" aria-labelledby="heading{{forloop.counter0}}" data-bs-parent="#accordion{{forloop.counter0}}">
+                                    <div class="card-body" id="dragBox{{schedule.id}}">
+                                        {% for item in schedule.items %}
+
+                                        <!-- 첫번째 스케줄은 숙소 -->
+                                        {% if forloop.counter == 1 %}
+                                        <div class="card mb-3" aroundId="{{item.around.id}}" scheduleId="{{schedule.id}}" counter="{{forloop.counter}}">
+
+                                            <!-- around title -->
+                                            <div class="card-title d-flex justify-content-between align-items-center">
+                                                <h6>
+                                                    {{item.around.name}}
+                                                </h6>
+                                            </div>
+
+                                            <!-- around content -->
+                                            <div class="d-flex">
+                                                {% if item.around.medias|length > 0 and item.around.medias.0 != '' %}
+                                                <div class="img-wrapper" style="flex: 0 0 40%; overflow: hidden;">
+                                                    <div class="owl-carousel owl-theme">
+                                                        {% for media in item.around.medias %}
+                                                        <div class="item">
+                                                            <div style="width: 100%; height: 16vh; max-height: 200px; background: url('{{media}}') center/contain no-repeat;"></div>
+                                                        </div>
+                                                        {% endfor %}
+                                                    </div>
+                                                </div>
+                                                {% endif %}
+                                                <div class="text-content" style="flex: 1; padding-left: 10px;">
+                                                    <p>{{item.around.note}}</p>
+                                                    <p class="m-0 small text-secondary">객실 수: {{item.around.rooms_cnt}}</p>
+                                                    <span style="font-size: 12px;">
+                                                        <i class="fa fa-location-dot"></i> {{item.around.address}}
+                                                    </span><br>
+                                                    <a href="tel:{{item.around.tel}}" class="text-primary" style="font-size: 12px;">
+                                                        <i class="fa fa-phone"></i> {{item.around.tel}}
+                                                    </a>
+                                                </div>
+                                            </div>
+
+                                            <!-- around button -->
+                                            <div class="button-group mt-3 border-bottom pb-3 text-end">
+                                                <a href="/schedule_map?id={{schedule.id}}" class="btn btn-primary me-2 mt-2" style="white-space: nowrap;">
+                                                    <i class="fa-solid fa-map-location-dot"></i> 지도로 보기
+                                                <a href="#" class="btn btn-success me-2 mt-2" style="white-space: nowrap;" onclick="openScheduleModal('{{schedule.id}}');">
+                                                    <i class="fa-solid fa-calendar"></i> 날짜 변경
+                                                </a>
+                                                <button class="btn btn-danger mt-2 me-2" style="white-space: nowrap;" onclick="deleteSchedule('{{schedule.id}}');">
+                                                    <i class="fa fa-trash-can"></i> 일정 삭제
+                                                </button>
+                                            </div>
+
+                                        </div>
+
+                                        <!-- 나머지 스케줄은 관광지 -->
+                                        {% else %}
+                                        <div class="card mb-3 dragHandle" aroundId="{{item.around.id}}" scheduleId="{{schedule.id}}" draggable="true" counter="{{forloop.counter}}">
+
+                                            <!-- around title -->
+                                            <div class="card-title d-flex justify-content-between align-items-center">
+                                                <h6>
+                                                    {{item.around.name}}
+                                                </h6>
+                                                <p class="m-0 text-secondary">
+                                                    <i class="fa-solid fa-grip-lines"></i>
+                                                </p>
+                                            </div>
+
+                                            <!-- around content -->
+                                            <div class="d-flex">
+                                                {% if item.around.medias|length > 0 and item.around.medias.0 != '' %}
+                                                <div class="img-wrapper" style="flex: 0 0 40%; overflow: hidden;">
+                                                    <div class="owl-carousel owl-theme">
+                                                        {% for media in item.around.medias %}
+                                                        <div class="item">
+                                                            <div style="width: 100%; height: 16vh; max-height: 200px; background: url('{{media}}') center/contain no-repeat;"></div>
+                                                        </div>
+                                                        {% endfor %}
+                                                    </div>
+                                                </div>
+                                                {% endif %}
+                                                <div class="text-content" style="flex: 1; padding-left: 10px;">
+                                                    <p>{{item.around.note}}</p>
+                                                    <p class="m-0 small text-secondary">영업시간: {{item.around.open_time}} / 휴무일: {{item.around.holiday}}</p>
+                                                    <span style="font-size: 12px;">
+                                                        <i class="fa fa-location-dot"></i> {{item.around.address}}
+                                                    </span><br>
+                                                    <a href="tel:{{item.around.tel}}" class="text-primary" style="font-size: 12px;">
+                                                        <i class="fa fa-phone"></i> {{item.around.tel}}
+                                                    </a>
+                                                </div>
+                                            </div>
+
+                                            <!-- around button -->
+                                            <div class="button-group mt-3 text-end">
+                                                <a class="btn btn-primary me-2 p-1 px-2 small mt-2" style="white-space: nowrap;" href="{{item.around.reserve_link}}">
+                                                    <i class="fa-solid fa-ticket"></i>  할인 티켓
+                                                </a>
+                                                <a href="#" class="btn btn-success me-2 p-1 px-2 small mt-2" style="white-space: nowrap;" onclick="openScheduleSelectModal('{{item.id}}');">
+                                                    <i class="fa-solid fa-rotate"></i> 일정변경
+                                                </a>
+                                                <button class="btn btn-danger p-1 px-2 small mt-2 me-2" style="white-space: nowrap;" onclick="deleteScheduleItem('{{item.id}}', '{{schedule.id}}');">
+                                                    <i class="fa fa-xmark"></i> 장소 삭제
+                                                </button>
+                                            </div>
+
+                                        </div>
+                                        {% endif %}
+                                        {% endfor %}
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        {% endfor %}
+
+                    </div>
+
+                </div>
+            </section>
+        </div>
+
+        <!-- 일정 모달 -->
+        <div class="modal fade" id="schedule-modal" tabindex="-1" role="dialog" aria-labelledby="schedule-modal-label" aria-hidden="true">
+            <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">날짜 선택</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <!-- 달력 시작 -->
+                    <div id="calendar-widget">
+                        <div id="head-wrapper" class="d-flex align-items-center justify-content-center">
+                            <div id="prev" class="button-wrapper me-3">
+                                <button type="button" id="prev-button">
+                                    &lt;
+                                </button>
+                            </div>
+                            <!--<h2 id="day" class="mx-2"></h2>
+                            <h2 id="date" class="mx-2"></h2>-->
+                            <h3 id="month" class="mx-3"></h3>
+                            <div id="next" class="button-wrapper ms-3">
+                                <button type="button" id="next-button">
+                                    &gt;
+                                </button>
+                            </div>
+                        </div>
+                        <div id="calendar-wrapper">
+                            <div id="table-wrapper">
+                                <h3 id="week"></h3>
+                                <table id="calendar-table">
+                                    <thead>
+                                        <tr>
+                                            <th>월</th>
+                                            <th>화</th>
+                                            <th>수</th>
+                                            <th>목</th>
+                                            <th>금</th>
+                                            <th>토</th>
+                                            <th>일</th>
+                                        </tr>
+                                    </thead>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- 달력 끝 -->
+                    <!-- <div id="calendar"></div> -->
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-success" data-bs-dismiss="modal" onclick="selectDate(getToday());">
+                        현재 날짜로 변경
+                    </button>
+                    <button type="button" class="btn btn-primary" data-bs-dismiss="modal" onclick="selectDate(CalendarWidget.selectedDate);">변경</button>
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">닫기</button>
+                </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 일정 선택 모달 -->
+        <div class="modal fade" id="schedule-select-modal" tabindex="-1" role="dialog" aria-labelledby="schedule-modal-label" aria-hidden="true">
+            <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">다른 일정으로 이동</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body" style="min-height: 300px;">
+                    {% for schedule in schedules %}
+                    <div class="border rounded p-3 shadow mb-3 schedule-select-card" id="scheduleBox{{schedule.id}}" onclick="selectChedule('{{schedule.id}}');" schedule_id="{{schedule.id}}">
+                        <div style="display: flex; justify-content: space-between;">
+                            <div style="display: inline-block; text-align: left;">
+                                <span style="font-size: 18px; font-weight: bold;">
+                                    {{schedule.date}} {{schedule.items.0.around.name}}
+                                </spab>
+                            </div>
+                            <div style="display: inline-block; text-align: right;">
+                                >
+                            </div>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+                <div class="modal-footer">
+                    <button type="button" onclick="changeSchedule();" class="btn btn-success" data-bs-dismiss="modal">
+                        선택한 일정으로 이동
+                    </button>
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">닫기</button>
+                </div>
+                </div>
+            </div>
+        </div>
+
+        <input class="d-none" id="selectedSchedule">
+
+        <!-- FOOTER
+        ================================================== -->
+        {% include "_jejuya/parts/footer.html" %}
+
+        <script src="/static/_jejuya/js/jquery.min.js"></script>
+        <script src="/static/_jejuya/js/popper.min.js"></script>
+        <script src="/static/_jejuya/js/bootstrap.min.js"></script>
+        <script src="/static/_jejuya/js/scrollIt.min.js"></script>
+        <script src="/static/_jejuya/js/nav-menu.js"></script>
+        <script src="/static/_jejuya/js/easy.responsive.tabs.js"></script>
+        <script src="/static/_jejuya/js/owl.carousel.js"></script>
+        <script src="/static/_jejuya/js/owl.carousel.thumbs.js"></script>
+        <script src="/static/_jejuya/js/animated-headline.js"></script>
+        <script src="/static/_jejuya/js/jquery.counterup.min.js"></script>
+        <script src="/static/_jejuya/js/jquery.stellar.min.js"></script>
+        <script src="/static/_jejuya/js/waypoints.min.js"></script>
+        <script src="/static/_jejuya/js/countdown.js"></script>
+        <script src="/static/_jejuya/js/clipboard.min.js"></script>
+        <script src="/static/_jejuya/js/jquery.magnific-popup.min.js"></script>
+        <script src="/static/_jejuya/js/isotope.pkgd.min.js"></script>
+        <script src="/static/_jejuya/js/jquery.mousewheel.min.js"></script>
+        <script src="/static/_jejuya/js/lightgallery-all.js"></script>
+        <script src="/static/_jejuya/js/wow.js"></script>
+        <script src="/static/_jejuya/js/prism.js"></script>
+        <script src="/static/_jejuya/js/xzoom.js"></script>
+        <script src="/static/_jejuya/js/jquery.hammer.min.js"></script>
+        <script src="/static/_jejuya/js/setup.js"></script>
+        <script src="/static/_jejuya/js/jarallax.min.js"></script>
+        <script src="/static/_jejuya/js/jarallax-video.js"></script>
+        <script src="/static/_jejuya/js/gsap.js"></script>
+        <script src="/static/_jejuya/js/scrolltrigger.js"></script>
+        <script src="/static/_jejuya/js/splittext.js"></script>
+        <script src="/static/_jejuya/js/gsap-animation.js"></script>
+        <script src="/static/_jejuya/js/custom.js"></script>
+        <script src="/static/_jejuya/js/main.js"></script>
+        <script src="//cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+        <script src="/static/quform/js/plugins.js"></script>
+        <script src="/static/quform/js/scripts.js"></script>
+        <script src="/static/search/search.js"></script>
+        <script src="/static/_jejuya/js/calendarwidget.js"></script>
+        <script>
+            var changedSchedule = ''
+
+            window.onload = () => {
+                console.log('loaded');
+
+                // 5초마다 changedSchedule가 있는지 확인
+                setInterval(async () => {
+                    if (changedSchedule != '') {
+                        var changedCheduleBox = document.querySelector('#dragBox' + changedSchedule);
+                        var changedCheduleBoxChildren = changedCheduleBox.children;
+                        var update = false;
+                        var scheduleId = changedCheduleBoxChildren[0].getAttribute('scheduleId');
+                        for (var i = 1; i < changedCheduleBoxChildren.length; i++) {
+                            var aroundId = changedCheduleBoxChildren[i].getAttribute('aroundId');
+                            var counter = changedCheduleBoxChildren[i].getAttribute('counter');
+                            if (parseInt(counter) != i) {
+                                update = true;
+                                break;
+                            }
+                        }
+                        if (update) {
+                            await deleteData({
+                                model: 'SCHEDULE_ITEM',
+                                id: '',
+                                field: 'schedule_id',
+                                value: scheduleId
+                            });
+                            for (var i = 0; i < changedCheduleBoxChildren.length; i++) {
+                                await setData({
+                                    model: 'SCHEDULE_ITEM',
+                                    id: '',
+                                    field_value: JSON.stringify({
+                                        schedule_id: scheduleId,
+                                        around_id: changedCheduleBoxChildren[i].getAttribute('aroundId'),
+                                    })
+                                });
+                            }
+                            console.log('updated');
+                        } else {
+                            console.log('no changedSchedule');
+                        }
+                        changedSchedule = '';
+                    } else {
+                        console.log('no changedSchedule');
+                    }
+                }, 5000);
+            }
+
+            ///////// 드래그 앤 드록 //////////
+            let draggedElement = null;
+            let touchStartY = 0;
+            var dragHandles = document.querySelectorAll('.dragHandle');
+
+            dragHandles.forEach(card => {
+                card.addEventListener('dragstart', function (e) {
+                    draggedElement = this;
+                    setTimeout(() => {
+                        this.classList.add('dragging');
+                    }, 0);
+                });
+
+                card.addEventListener('dragend', function (e) {
+                    this.classList.remove('dragging');
+                    draggedElement = null;
+                });
+
+                card.addEventListener('touchstart', function (e) {
+                    draggedElement = this;
+                    touchStartY = e.touches[0].clientY;
+                    setTimeout(() => {
+                        this.classList.add('dragging');
+                    }, 0);
+                });
+
+                card.addEventListener('touchmove', function (e) {
+                    e.preventDefault();
+                    var cardContainer = document.getElementById('dragBox' + this.getAttribute('scheduleId'));
+                    var touchCurrentY = e.touches[0].clientY;
+                    var afterElement = getDragAfterElement(cardContainer, touchCurrentY);
+                    var draggable = document.querySelector('.dragging');
+                    if (afterElement == null) {
+                        cardContainer.appendChild(draggable);
+                    } else {
+                        cardContainer.insertBefore(draggable, afterElement);
+                    }
+                });
+
+                card.addEventListener('touchend', function (e) {
+                    this.classList.remove('dragging');
+                    draggedElement = null;
+                });
+
+                card.addEventListener('dragover', function (e) {
+                    e.preventDefault();
+                    var cardContainer = document.getElementById('dragBox' + this.getAttribute('scheduleId'));
+                    var afterElement = getDragAfterElement(cardContainer, e.clientY);
+                    var draggable = document.querySelector('.dragging');
+                    if (afterElement == null) {
+                        cardContainer.appendChild(draggable);
+                    } else {
+                        cardContainer.insertBefore(draggable, afterElement);
+                    }
+                });
+            });
+
+            function getDragAfterElement(container, y) {
+                const draggableElements = [...container.querySelectorAll('.dragHandle:not(.dragging)')];
+                changedSchedule = container.getAttribute('id').replace('dragBox', '');
+                return draggableElements.reduce((closest, child) => {
+                    const box = child.getBoundingClientRect();
+                    const offset = y - box.top - box.height / 2;
+                    if (offset < 0 && offset > closest.offset) {
+                        return { offset: offset, element: child };
+                    } else {
+                        return closest;
+                    }
+                }, { offset: Number.NEGATIVE_INFINITY }).element;
+            }
+
+            // 다른 일정으로 이동
+            let selectedScheduleItemId = '';
+            openScheduleSelectModal = (itemId) => {
+                selectedScheduleItemId = itemId;
+                new bootstrap.Modal(document.getElementById('schedule-select-modal')).show();
+            }
+
+            // 일정 선택
+            selectChedule = (scheduleId) => {
+                document.getElementById('selectedSchedule').value = scheduleId;
+                document.querySelectorAll('.schedule-select-card').forEach((el) => {
+                    el.classList.remove('bg-success');
+                    el.classList.remove('text-white');
+                    el.classList.remove('selectedScheduleBox');
+                });
+                document.getElementById('scheduleBox' + scheduleId).classList.add('bg-success');
+                document.getElementById('scheduleBox' + scheduleId).classList.add('text-white');
+                document.getElementById('scheduleBox' + scheduleId).classList.add('selectedScheduleBox');
+            }
+
+            // 일정 변경
+            changeSchedule = async () => {
+                if (selectedScheduleItemId == '') {
+                    return;
+                }else {
+                    console.log(selectedScheduleItemId);
+                }
+                selectedScheduleBox = document.querySelectorAll('.selectedScheduleBox');
+                if (selectedScheduleBox.length == 0) {
+                    return
+                }
+                selectedScheduleBox = selectedScheduleBox[0];
+
+                await getData({
+                    model: 'SCHEDULE_ITEM',
+                    id: selectedScheduleItemId,
+                }).then(async (data) => {
+                    var dbData = JSON.parse(data.db);
+                    var pk = dbData[0].pk;
+                    var fields = dbData[0].fields;
+                    await setData({
+                        model: 'SCHEDULE_ITEM',
+                        id: selectedScheduleItemId,
+                        field_value: JSON.stringify({
+                            schedule_id: selectedScheduleBox.getAttribute('schedule_id'),
+                            around_id: fields['around_id'],
+                        })
+                    }).then(async (data) => {
+
+                        // 일정에 관광지가 없는지 확인
+                        await getData({
+                            model: 'SCHEDULE_ITEM',
+                            id: '',
+                            field: 'schedule_id',
+                            value: fields['schedule_id']
+                        }).then(async (data) => {
+                            var dbData = JSON.parse(data.db);
+
+                            // 일정 아이켐이 없으면 일정 삭제
+                            if (dbData.length < 2) {
+                                await deleteData({
+                                    model: 'SCHEDULE',
+                                    id: fields['schedule_id']
+                                });
+                            } else {
+                                console.log(dbData);
+                            }
+                        });
+
+                        await Swal.fire({
+                            html: `
+                            <div>
+                                <div class="text-center py-4">
+                                    <h1 class="text-dark">일정 변경</h1>
+                                </div>
+                                <diV class="text-start">
+                                    <p class="text-secondary">
+                                        선택하신 일정으로 변경되었습니다.
+                                    </p>
+                                </div>
+                            </div>`,
+                            icon: `success`,
+                            showConfirmButton: true,
+                            confirmButtonText: `확인`,
+                            showCancelButton: false,
+                            cancelButtonText: ``,
+                        }).then((result) => {
+                            window.location.reload();
+                        });
+                    });
+                });
+            }
+
+            // 일정 삭제
+            deleteSchedule = async (scheduleId) => {
+                await Swal.fire({
+                    html: `
+                    <div>
+                        <div class="text-center py-4">
+                            <h1 class="text-dark">일정 삭제</h1>
+                        </div>
+                        <diV class="text-start">
+                            <p class="text-secondary">
+                                선택하신 일정과 선택한 관광지를 모두 삭제하시겠습니까?
+                            </p>
+                        </div>
+                    </div>`,
+                    icon: `warning`,
+                    showConfirmButton: true,
+                    confirmButtonText: `삭제하기`,
+                    confirmButtonColor: `#dc3545`,
+                    showCancelButton: true,
+                    cancelButtonText: `취소`,
+                }).then(async (result) => {
+                    if (result.isConfirmed) {
+                        await deleteData({
+                            model: 'SCHEDULE',
+                            id: scheduleId
+                        });
+                        window.location.reload();
+                    }
+                });
+            }
+
+            // 일정 아이템 삭제
+            deleteScheduleItem = async (itemId, scheduleId) => {
+                await Swal.fire({
+                    html: `
+                    <div>
+                        <div class="text-center py-4">
+                            <h1 class="text-dark">일정 삭제</h1>
+                        </div>
+                        <diV class="text-start">
+                            <p class="text-secondary">
+                                선택하신 일정을 삭제하시겠습니까?
+                            </p>
+                        </div>
+                    </div>`,
+                    icon: `warning`,
+                    showConfirmButton: true,
+                    confirmButtonText: `삭제하기`,
+                    confirmButtonColor: `#dc3545`,
+                    showCancelButton: true,
+                    cancelButtonText: `취소`,
+                }).then(async (result) => {
+                    if (result.isConfirmed) {
+
+                        // 일정 삭제
+                        await deleteData({
+                            model: 'SCHEDULE_ITEM',
+                            id: itemId
+                        });
+
+                        // 일정이 비어있는지 확인
+                        await getData({
+                            model: 'SCHEDULE_ITEM',
+                            id: '',
+                            field: 'schedule_id',
+                            value: scheduleId
+                        }).then(async (data) => {
+                            var dbData = JSON.parse(data.db);
+
+                            // 일정 아이켐이 없으면 일정 삭제
+                            if (dbData.length < 3) {
+                                await deleteData({
+                                    model: 'SCHEDULE',
+                                    id: scheduleId
+                                });
+                            } else {
+                                console.log(dbData);
+                            }
+                        });
+
+                        window.location.reload();
+                    }
+                });
+            }
+
+            // 스케줄 날짜 변경 모달 열기
+            openScheduleModal = (scheduleId) => {
+                document.getElementById('selectedSchedule').value = scheduleId;
+                new bootstrap.Modal(document.getElementById('schedule-modal')).show();
+            }
+
+            // 선택된 스케줄을 다른 날짜로 변경
+            selectDate = async (date) => {
+                await setData({
+                    model: 'SCHEDULE',
+                    id: document.getElementById('selectedSchedule').value,
+                    field_value: JSON.stringify({
+                        user_id: '{{account.id}}',
+                        date: date
+                    })
+                }).then(async (data) => {
+                    await Swal.fire({
+                        html: `
+                        <div>
+                            <div class="text-center py-4">
+                                <h1 class="text-dark">일정 변경</h1>
+                            </div>
+                            <diV class="text-start">
+                                <p class="text-secondary">
+                                    선택하신 일정의 날짜가 변경되었습니다.
+                                </p>
+                            </div>
+                        </div>`,
+                        icon: `success`,
+                        showConfirmButton: true,
+                        confirmButtonText: `확인`,
+                        showCancelButton: false,
+                        cancelButtonText: ``,
+                    }).then((result) => {
+                        window.location.reload();
+                    });
+                });
+            }
+
+            // 달력 날짜 부분에 '일' 글자를 없애려고 했는데, 이게 잘 안되어서 보내는 시간이 좀 걸렸네요.
+            // 일단 결과 보내드리고 마저 알아보려고 합니다.
+            // document.addEventListener("DOMContentLoaded", function() {
+            //     var calendarEl = document.getElementById('calendar');
+            //     var calendar = new FullCalendar.Calendar(calendarEl, {
+            //         plugins: ['interaction', 'dayGrid'],
+            //         defaultDate: '2024-01-01',
+            //         locale: 'ko',
+            //         editable: true,
+            //         // dayRender: function(dayRenderInfo) {
+            //         //     // Access the day element and modify its content
+            //         //     var dayElement = dayRenderInfo.el;
+            //         //     console.log(dayElement);
+            //         //     var dayNumberSpan = dayElement.querySelector('.fc-day-number');
+            //         //     console.log(dayNumberSpan);
+            //         //     if (dayNumberSpan) {
+            //         //         dayNumberSpan.textContent = dayNumberSpan.textContent.replace(/일/g, '').trim();
+            //         //     }
+            //         // },
+            //         events: [
+            //             {
+            //                 title: '제주 여행',
+            //                 start: '2024-01-01T10:00:00',
+            //                 end: '2024-01-03T10:10:00'
+            //             }
+            //         ]
+            //     });
+            //     calendar.render();
+            // });
+            document.addEventListener("DOMContentLoaded", () => {
+                CalendarWidget.init();
+            });
+        </script>
+    </body>
+
+</html>

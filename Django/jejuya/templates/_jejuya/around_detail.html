@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="ko">
+    {% load static %}
+    {% csrf_token %}
+
+    <head>
+
+        <meta name="robots" content="noindex, nofollow">
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge"/>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+
+        <title>제주야</title>
+
+        <!-- style
+        ================================================== -->
+        <link rel="stylesheet" href="/static/_jejuya/css/plugins.css"/>
+        <link rel="stylesheet" href="/static/_jejuya/css/custom.css"/>
+        <link rel="stylesheet" href="/static/_jejuya/css/styles.css"/>
+        <link rel="stylesheet" href="/static/_jejuya/css/index.css"/>
+        <link rel="stylesheet" href="/static/search/search.css"/>
+        <link rel="stylesheet" href="/static/quform/css/base.css"/>
+
+        <!-- script
+        ================================================== -->
+        <script type="text/javascript" src="https://openapi.map.naver.com/openapi/v3/maps.js?ncpClientId="></script>
+
+    </head>
+
+    <body style="word-break: keep-all;" class="bg-white">
+
+        <!-- PAGE LOADING ================================================== -->
+        <div id="preloader"></div>
+
+        <!-- MAIN WRAPPER ================================================== -->
+        <div class="main-wrapper">
+
+            <!-- HEADER
+            ================================================== -->
+            {% include "_jejuya/parts/header.html" %}
+
+            <!-- MAIN SECTION
+            ================================================== -->
+            <section class="m-0 p-0 my-4" style="min-height: 100vh;">
+                <div class="container">
+
+                    <!-- goback -->
+                    <a class="small" href="javascript: window.history.back();">
+                        <i class="fa fa-chevron-left"></i> 뒤로가기
+                    </a>
+
+                    <!-- title -->
+                    <div class="mt-2 mb-5">
+                        <p class="m-0 text-dark">
+                            천지연폭포
+                        </p>
+                        <small class="text-secondary">
+                            주소 : ㅁㄴㅇㄻㄴㅇㄻㄴㅇㄻㄴㅇㄻㄴㅇㄹ
+                        </small>
+                    </div>
+
+                    <!-- content -->
+                    <div class="content my-4" style="min-height: 100vh;">
+                        주소:제주특별자치도 서귀포시 서홍동
+                        천지연폭포
+                        천지연폭포(天地淵瀑布)는 제주도 서귀
+                        포시 서귀동에 있는 폭포이다. ‘천지연’이
+                        란 이름은 ‘하늘(天)과 땅(地)이 만나서 이
+                        룬 연못’이라는 뜻이다.
+                        폭포의 절벽은 화산활동으로 인해 생성
+                        된 조면암이 섞인 안산암으로 이루어져있
+                        다. 폭포수의 폭은 약 12 m 높이는 22 m,
+                        연못의 수심은 약 20 m이다. 계곡에는 아
+                        열대성·난대성의 각종 상록수와 양치식
+                        물 등이 밀생하는 울창한 숲을 이룬다.
+                        <div class="button-group text-end">
+                            <button class="btn btn-primary">할인티켓구매</button>
+                        </div>
+                    </div> 
+                </div>
+            </section>
+
+        </div>
+
+        <!-- FOOTER
+        ================================================== -->
+        {% include "_jejuya/parts/footer.html" %}
+
+        <script src="/static/_jejuya/js/jquery.min.js"></script>
+        <script src="/static/_jejuya/js/popper.min.js"></script>
+        <script src="/static/_jejuya/js/bootstrap.min.js"></script>
+        <script src="/static/_jejuya/js/scrollIt.min.js"></script>
+        <script src="/static/_jejuya/js/nav-menu.js"></script>
+        <script src="/static/_jejuya/js/easy.responsive.tabs.js"></script>
+        <script src="/static/_jejuya/js/owl.carousel.js"></script>
+        <script src="/static/_jejuya/js/owl.carousel.thumbs.js"></script>
+        <script src="/static/_jejuya/js/animated-headline.js"></script>
+        <script src="/static/_jejuya/js/jquery.counterup.min.js"></script>
+        <script src="/static/_jejuya/js/jquery.stellar.min.js"></script>
+        <script src="/static/_jejuya/js/waypoints.min.js"></script>
+        <script src="/static/_jejuya/js/countdown.js"></script>
+        <script src="/static/_jejuya/js/clipboard.min.js"></script>
+        <script src="/static/_jejuya/js/jquery.magnific-popup.min.js"></script>
+        <script src="/static/_jejuya/js/isotope.pkgd.min.js"></script>
+        <script src="/static/_jejuya/js/jquery.mousewheel.min.js"></script>
+        <script src="/static/_jejuya/js/lightgallery-all.js"></script>
+        <script src="/static/_jejuya/js/wow.js"></script>
+        <script src="/static/_jejuya/js/prism.js"></script>
+        <script src="/static/_jejuya/js/xzoom.js"></script>
+        <script src="/static/_jejuya/js/jquery.hammer.min.js"></script>
+        <script src="/static/_jejuya/js/setup.js"></script>
+        <script src="/static/_jejuya/js/jarallax.min.js"></script>
+        <script src="/static/_jejuya/js/jarallax-video.js"></script>
+        <script src="/static/_jejuya/js/gsap.js"></script>
+        <script src="/static/_jejuya/js/scrolltrigger.js"></script>
+        <script src="/static/_jejuya/js/splittext.js"></script>
+        <script src="/static/_jejuya/js/gsap-animation.js"></script>
+        <script src="/static/_jejuya/js/custom.js"></script>
+        <script src="/static/_jejuya/js/main.js"></script>
+        <script src="//cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+        <script src="/static/quform/js/plugins.js"></script>
+        <script src="/static/quform/js/scripts.js"></script>
+        <script src="/static/search/search.js"></script>
+        <script>
+            window.onload = () => {
+                console.log(`Window loaded at ${getNowDt()}`);
+            }
+        </script>
+
+    </body>
+
+</html>

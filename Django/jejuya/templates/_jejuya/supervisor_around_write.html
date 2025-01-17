@@ -1,0 +1,544 @@
+<!DOCTYPE html>
+<html lang="ko">
+    {% load static %}
+    {% csrf_token %}
+
+    <head>
+
+        <meta name="robots" content="noindex, nofollow">
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge"/>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+
+        <title>제주야 관리자</title>
+
+        <!-- favicon
+        ================================================== -->
+        <link rel="icon" type="image/png" href="/static/_jejuya/img/logos/favicon.png">
+        <link rel="shortcut icon" href="/static/_jejuya/img/logos/favicon.png" />
+        <link rel="apple-touch-icon" href="/static/_jejuya/img/logos/apple-touch-icon-57x57.png" />
+        <link rel="apple-touch-icon" sizes="72x72" href="/static/_jejuya/img/logos/apple-touch-icon-72x72.png" />
+        <link rel="apple-touch-icon" sizes="114x114" href="/static/_jejuya/img/logos/apple-touch-icon-114x114.png" />
+
+        <!-- style
+        ================================================== -->
+        <link rel="stylesheet" href="/static/_jejuya/css/plugins.css"/>
+        <link rel="stylesheet" href="/static/_jejuya/css/custom.css"/>
+        <link rel="stylesheet" href="/static/_jejuya/css/styles.css"/>
+        <link rel="stylesheet" href="/static/_jejuya/css/index.css"/>
+        <link rel="stylesheet" href="/static/search/search.css"/>
+        <link rel="stylesheet" href="/static/quform/css/base.css"/>
+
+    </head>
+
+    <body style="word-break: keep-all;" class="bg-white">
+
+        <!-- PAGE LOADING ================================================== -->
+        <div id="preloader"></div>
+
+        <!-- MAIN WRAPPER ================================================== -->
+        <div class="main-wrapper">
+
+            <!-- MAIN SECTION
+            ================================================== -->
+            <section class="p-0 py-2 bg-light" style="min-height: 100vh;">
+                <div class="container d-flex flex-column">
+                    <div class="row align-items-center justify-content-center min-vh-100">
+                        <div class="col-12 col-lg-8">
+
+                            <!-- goback -->
+                            <a href="javascript: window.location.href='/supervisor_arounds';" class="small">
+                                < 관광지 리스트로 돌아가기
+                            </a>
+
+                            <div class="card p-4">
+
+                                <!-- title -->
+                                <div class="my-4 text-center">
+                                    <h2 class="font-weight-normal mb-0">관광지 생성</h2>
+                                    <p class="mb-0">
+                                        기준점 주변의 관광지를 생성합니다.
+                                    </p>
+                                </div>
+
+
+                                <!-- image preview -->
+                                <div class="row" id="multifulImage">
+                                    <div class="owl-carousel owl-theme testmonial-style02" style="height: 52vw; max-height: 400px;">
+
+                                        <!-- 이미지 0 -->
+                                        <div class="item preview0">
+                                            <div class="mb-4" style="margin:0 auto; width: 48vw; max-width: 350px;">
+                                                <div class="w-100 bg-dark text-end" style="background: url() center/contain no-repeat grey; height: 48vw; padding-right: 6px; max-height: 350px;">
+                                                    <a class="text-danger" href="javascript: deleteImage(0);">
+                                                        <i class="fa fa-lg fa-xmark"></i>
+                                                    </a>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <!-- 이미지 1 -->
+                                        <div class="item preview1">
+                                            <div class="mb-4" style="margin:0 auto; width: 48vw; max-width: 350px;">
+                                                <div class="w-100 bg-dark text-end" style="background: url() center/contain no-repeat grey; height: 48vw; padding-right: 6px; max-height: 350px;">
+                                                    <a class="text-danger" href="javascript: deleteImage(0);">
+                                                        <i class="fa fa-lg fa-xmark"></i>
+                                                    </a>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <!-- 이미지 2 -->
+                                        <div class="item preview2">
+                                            <div class="mb-4" style="margin:0 auto; width: 48vw; max-width: 350px;">
+                                                <div class="w-100 bg-dark text-end" style="background: url() center/contain no-repeat grey; height: 48vw; padding-right: 6px; max-height: 350px;">
+                                                    <a class="text-danger" href="deleteImage(2);">
+                                                        <i class="fa fa-lg fa-xmark"></i>
+                                                    </a>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <!-- 이미지 3 -->
+                                        <div class="item preview3">
+                                            <div class="mb-4" style="margin:0 auto; width: 48vw; max-width: 350px;">
+                                                <div class="w-100 bg-dark text-end" style="background: url() center/contain no-repeat grey; height: 48vw; padding-right: 6px; max-height: 350px;">
+                                                    <a class="text-danger" href="deleteImage(3);">
+                                                        <i class="fa fa-lg fa-xmark"></i>
+                                                    </a>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <!-- 이미지 4 -->
+                                        <div class="item preview4">
+                                            <div class="mb-4" style="margin:0 auto; width: 48vw; max-width: 350px;">
+                                                <div class="w-100 bg-dark text-end" style="background: url() center/contain no-repeat grey; height: 48vw; padding-right: 6px; max-height: 350px;">
+                                                    <a class="text-danger" href="deleteImage(4);">
+                                                        <i class="fa fa-lg fa-xmark"></i>
+                                                    </a>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- image upload -->
+                                <div class="row" id="imageUpload">
+                                    <div class="form-group">
+                                        <input id="images" type="file" class="form-control" style="height: 35px;" accept="image/png, image/jpeg, image/gif" multiple>
+                                        <small>
+                                            이미지(최대 5개 등록 가능)
+                                        </small>
+                                    </div>
+                                </div>
+
+                                <!-- address -->
+                                <div class="form-group mb-4">
+                                    <div style="display: flex; justify-content: space-between; white-space: nowrap;">
+                                        <div style="display: inline-block; text-align: left;">
+                                            <label>주소</label>
+                                        </div>
+                                        <div style="display: inline-block; text-align: right;">
+                                            <a href="javascript: sample3_execDaumPostcode();" class="butn style-one fill bg-secondary small p-1 px-2">
+                                                <i class="fa-solid fa-magnifying-glass"></i> 주소검색
+                                            </a>
+                                        </div>
+                                    </div>
+                                    <div class="content">
+                                        <div id="wrap" style="display:none;border:1px solid;width:100%;height:300px;margin:5px 0;position:relative">
+                                        <img src="//t1.daumcdn.net/postcode/resource/images/close.png" id="btnFoldWrap" style="cursor:pointer;position:absolute;right:0px;top:-1px;z-index:1" onclick="foldDaumPostcode()" alt="접기 버튼">
+                                        </div>
+                                        <script src="//t1.daumcdn.net/mapjsapi/bundle/postcode/prod/postcode.v2.js"></script>
+                                        <script>
+                                            // 우편번호 찾기 찾기 화면을 넣을 element
+                                            var element_wrap = document.getElementById('wrap');
+                                        
+                                            function foldDaumPostcode() {
+                                                // iframe을 넣은 element를 안보이게 한다.
+                                                element_wrap.style.display = 'none';
+                                            }
+                                        
+                                            function sample3_execDaumPostcode() {
+                                                // 현재 scroll 위치를 저장해놓는다.
+                                                var currentScroll = Math.max(document.body.scrollTop, document.documentElement.scrollTop);
+                                                new daum.Postcode({
+                                                    oncomplete: function(data) {
+                                                        // 검색결과 항목을 클릭했을때 실행할 코드를 작성하는 부분.
+                                        
+                                                        // 각 주소의 노출 규칙에 따라 주소를 조합한다.
+                                                        // 내려오는 변수가 값이 없는 경우엔 공백('')값을 가지므로, 이를 참고하여 분기 한다.
+                                                        var addr = ''; // 주소 변수
+                                                        var extraAddr = ''; // 참고항목 변수
+                                        
+                                                        //사용자가 선택한 주소 타입에 따라 해당 주소 값을 가져온다.
+                                                        if (data.userSelectedType === 'R') { // 사용자가 도로명 주소를 선택했을 경우
+                                                            addr = data.roadAddress;
+                                                        } else { // 사용자가 지번 주소를 선택했을 경우(J)
+                                                            addr = data.jibunAddress;
+                                                        }
+                                        
+                                                        // 사용자가 선택한 주소가 도로명 타입일때 참고항목을 조합한다.
+                                                        if(data.userSelectedType === 'R'){
+                                                            // 법정동명이 있을 경우 추가한다. (법정리는 제외)
+                                                            // 법정동의 경우 마지막 문자가 "동/로/가"로 끝난다.
+                                                            if(data.bname !== '' && /[동|로|가]$/g.test(data.bname)){
+                                                                extraAddr += data.bname;
+                                                            }
+                                                            // 건물명이 있고, 공동주택일 경우 추가한다.
+                                                            if(data.buildingName !== '' && data.apartment === 'Y'){
+                                                                extraAddr += (extraAddr !== '' ? ', ' + data.buildingName : data.buildingName);
+                                                            }
+                                                            // 표시할 참고항목이 있을 경우, 괄호까지 추가한 최종 문자열을 만든다.
+                                                            if(extraAddr !== ''){
+                                                                extraAddr = ' (' + extraAddr + ')';
+                                                            }
+                                                        }
+                                        
+                                                        // 우편번호와 주소 정보를 해당 필드에 넣는다.
+                                                        document.getElementById("address").value = addr;
+                                        
+                                                        // iframe을 넣은 element를 안보이게 한다.
+                                                        // (autoClose:false 기능을 이용한다면, 아래 코드를 제거해야 화면에서 사라지지 않는다.)
+                                                        element_wrap.style.display = 'none';
+                                        
+                                                        // 우편번호 찾기 화면이 보이기 이전으로 scroll 위치를 되돌린다.
+                                                        document.body.scrollTop = currentScroll;
+                                                    },
+                                                    // 우편번호 찾기 화면 크기가 조정되었을때 실행할 코드를 작성하는 부분. iframe을 넣은 element의 높이값을 조정한다.
+                                                    onresize : function(size) {
+                                                        element_wrap.style.height = size.height+'px';
+                                                    },
+                                                    width : '100%',
+                                                    height : '100%'
+                                                }).embed(element_wrap);
+                                        
+                                                // iframe을 넣은 element를 보이게 한다.
+                                                element_wrap.style.display = 'block';
+                                            }
+                                        </script>
+                                    </div>
+                                    <input type="text" id="address" class="form-control mt-2 mb-1" placeholder="주소를 검색해주세요." readonly>
+                                </div>
+
+                                <!-- name -->
+                                <div class="form-group">
+                                    <label>관광지명</label>
+                                    <input type="text" class="form-control" id="name" placeholder="관광지명을 입력해주세요.">
+                                </div>
+
+                                <div class="row">
+                                        <!-- tel -->
+                                        <div class="form-group">
+                                            <label>연락처</label>
+                                            <input type="text" class="form-control" id="tel" placeholder="연락처를 입력해주세요.">
+                                        </div>
+                                </div>
+
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <!-- around_type -->
+                                        <div class="form-group">
+                                            <label>1차 카테고리</label>
+                                            <input type="text" class="form-control" id="around_type" placeholder="1차 카테고리를 입력해주세요.">
+                                            <small>
+                                                {% for around_type in around_types %}
+                                                {{around_type}},
+                                                {% endfor %}
+                                            </small>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <!-- categoies -->
+                                        <div class="form-group">
+                                            <label>2차 카테고리들</label>
+                                            <input class="form-control" id="categories" placeholder="2차 카테고리들을 입력해주세요.(,로 구분)">
+                                            <small>
+                                                {% for category in categories %}
+                                                {{category}},
+                                                {% endfor %}
+                                            </small>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="row">
+                                    <!-- open_time -->
+                                    <div class="form-group">
+                                        <label>운영시간</label>
+                                        <input type="text" class="form-control" id="open_time" placeholder="운영시간을 입력해주세요.">
+                                    </div>
+                                </div>
+
+                                <div class="row">
+                                        <!-- holiday -->
+                                        <div class="form-group">
+                                            <label>휴무일</label>
+                                            <input class="form-control" id="holiday" placeholder="휴무일을 입력해주세요.">
+                                        </div>
+                                </div>
+
+                                <!-- link -->
+                                <div class="form-group">
+                                    <label>예약 링크</label>
+                                    <input type="text" class="form-control" id="reserve_link" placeholder="예약 링크를 입력해주세요.">
+                                </div>
+
+                                <!-- detail -->
+                                <div class="row mt-2">
+                                    <div class="form-group">
+                                        <label>상세정보</label>
+                                        <div class="editor-controls">
+                                            <select id="fontSize" class="control-select">
+                                                <option value="1">매우 작게</option>
+                                                <option value="2">작게</option>
+                                                <option value="3" selected>보통</option>
+                                                <option value="4">큼</option>
+                                                <option value="5">더 큼</option>
+                                                <option value="6">매우 큼</option>
+                                                <option value="7">최대</option>
+                                            </select>
+                                            <button id="boldToggleButton" class="editor-button" onclick="formatText('bold')">B</button>
+                                            <button id="underlineToggleButton" class="editor-button" onclick="formatText('underline')">U</button>
+                                            <button id="italicToggleButton" class="editor-button" onclick="formatText('italic')">I</button>
+                                        </div>
+                                        <div contenteditable="true" id="content"></div>
+                                    </div>
+                                </div>
+
+                                <div class="row mt-2">
+                                    <div class="col-md-12 center">
+                                        <button onclick="tryWrite();" class="butn style-one fill d-block mt-4 mb-0 bg-primary">
+                                            저장하기
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+        </div>
+
+        <script src="/static/_jejuya/js/jquery.min.js"></script>
+        <script src="/static/_jejuya/js/popper.min.js"></script>
+        <script src="/static/_jejuya/js/bootstrap.min.js"></script>
+        <script src="/static/_jejuya/js/scrollIt.min.js"></script>
+        <script src="/static/_jejuya/js/nav-menu.js"></script>
+        <script src="/static/_jejuya/js/easy.responsive.tabs.js"></script>
+        <script src="/static/_jejuya/js/owl.carousel.js"></script>
+        <script src="/static/_jejuya/js/owl.carousel.thumbs.js"></script>
+        <script src="/static/_jejuya/js/animated-headline.js"></script>
+        <script src="/static/_jejuya/js/jquery.counterup.min.js"></script>
+        <script src="/static/_jejuya/js/jquery.stellar.min.js"></script>
+        <script src="/static/_jejuya/js/waypoints.min.js"></script>
+        <script src="/static/_jejuya/js/countdown.js"></script>
+        <script src="/static/_jejuya/js/clipboard.min.js"></script>
+        <script src="/static/_jejuya/js/jquery.magnific-popup.min.js"></script>
+        <script src="/static/_jejuya/js/isotope.pkgd.min.js"></script>
+        <script src="/static/_jejuya/js/jquery.mousewheel.min.js"></script>
+        <script src="/static/_jejuya/js/lightgallery-all.js"></script>
+        <script src="/static/_jejuya/js/wow.js"></script>
+        <script src="/static/_jejuya/js/prism.js"></script>
+        <script src="/static/_jejuya/js/xzoom.js"></script>
+        <script src="/static/_jejuya/js/jquery.hammer.min.js"></script>
+        <script src="/static/_jejuya/js/setup.js"></script>
+        <script src="/static/_jejuya/js/jarallax.min.js"></script>
+        <script src="/static/_jejuya/js/jarallax-video.js"></script>
+        <script src="/static/_jejuya/js/gsap.js"></script>
+        <script src="/static/_jejuya/js/scrolltrigger.js"></script>
+        <script src="/static/_jejuya/js/splittext.js"></script>
+        <script src="/static/_jejuya/js/gsap-animation.js"></script>
+        <script src="/static/_jejuya/js/custom.js"></script>
+        <script src="/static/_jejuya/js/main.js"></script>
+        <script src="//cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+        <script src="/static/quform/js/plugins.js"></script>
+        <script src="/static/quform/js/scripts.js"></script>
+        <script src="/static/search/search.js"></script>
+        <!-- media -->
+        <script>
+            const preview0Box = document.getElementById("preview0");
+            const preview1Box = document.getElementById("preview1");
+            const preview2Box = document.getElementById("preview2");
+            const preview3Box = document.getElementById("preview3");
+            const preview4Box = document.getElementById("preview4");
+            const preview5Box = document.getElementById("preview5");
+            const imagesInput = document.getElementById("images");
+            const multifulImageBox = document.getElementById('multifulImage');
+            const imageUploadBox = document.getElementById('imageUpload');
+            let uploadedFiles = [];
+
+            imagesInput.addEventListener('change', function () {
+                const filesArray = Array.from(imagesInput.files);
+                filesArray.sort((a, b) => a.name.localeCompare(b.name));
+                for (let i = 0; i < 5; i++) {
+                    if (filesArray[i] && checkImage(filesArray[i])) {
+                        const reader = new FileReader();
+                        reader.onload = function (e) {
+                            document.querySelectorAll(`.preview${i}>div>div`).forEach((el) => {
+                                el.style.background = `url(${e.target.result}) center/contain no-repeat grey`;
+                            });
+                            document.querySelectorAll(`.preview5>div>div`).forEach((el) => {
+                                el.style.background = `url(${e.target.result}) center/contain no-repeat grey`;
+                            });
+                        };
+                        reader.readAsDataURL(filesArray[i]);
+                        uploadedFiles.push(filesArray[i]);
+                    } else {
+                        document.querySelectorAll(`.preview${i}>div>div`).forEach((el) => {
+                            el.style.background = 'url() center/contain no-repeat grey';
+                        });
+                    }
+                }
+            });
+
+            function deleteImage(index) {
+                uploadedFiles.splice(index, 1);
+                for (let i = 0; i < 5; i++) {
+                    if (i < uploadedFiles.length) {
+                        const file = uploadedFiles[i];
+                        const reader = new FileReader();
+                        reader.onload = function (e) {
+                            document.querySelectorAll(`.preview${i}>div>div`).forEach((el) => {
+                                el.style.background = `url(${e.target.result}) center/contain no-repeat grey`;
+                            });
+                        };
+                        reader.readAsDataURL(file);
+                    } else {
+                        document.querySelectorAll(`.preview${i}>div>div`).forEach((el) => {
+                            el.style.background = 'url() center/contain no-repeat grey';
+                        });
+                    }
+                }
+            }
+        </script>
+        <!-- wysiwyg -->
+        <script>
+            document.getElementById('fontSize').addEventListener('change', function() {
+                formatText('fontSize', this.value);
+            });
+            function formatText(command) {
+                if (command === 'fontSize') {
+                    document.execCommand('fontSize', false, arguments[1]);
+                } else {
+                    document.execCommand(command, false, null);
+                    const buttonId = command + 'ToggleButton';
+                    const button = document.getElementById(buttonId);
+                    button.classList.toggle('toggle-active');
+                }
+                document.getElementById('content').focus();
+            }
+            document.getElementById('content').addEventListener('paste', function(e) {
+                e.preventDefault();
+                var text = (e.originalEvent || e).clipboardData.getData('text/plain');
+                document.execCommand('insertText', false, text);
+            });
+        </script>
+        <script>
+            // const
+            const addressInput = document.getElementById('address');
+            const nameInput = document.getElementById('name');
+            const telInput = document.getElementById('tel');
+            const contentInput = document.getElementById('content');
+            const aroundTypeInput = document.getElementById('around_type');
+            const categoriesInput = document.getElementById('categories');
+            const openTimeInput = document.getElementById('open_time');
+            const holidayInput = document.getElementById('holiday');
+            const reserveLinkInput = document.getElementById('reserve_link');
+
+            // functions
+            window.onload = () => {
+                console.log(`Window loaded at ${getNowDt()}`);
+            }
+
+            tryWrite = async () => {
+                // none check: name, address, around_type, categories, link
+                if (!nameInput.value) {
+                    alert('관광지 이름을 입력해주세요.');
+                    return;
+                }
+                if (!addressInput.value) {
+                    alert('주소를 입력해주세요.');
+                    return;
+                }
+                if (!aroundTypeInput.value) {
+                    alert('1차 카테고리를 입력해주세요.');
+                    return;
+                }
+                if (!categoriesInput.value) {
+                    alert('2차 카테고리를 입력해주세요.');
+                    return;
+                }
+                if (!reserveLinkInput.value) {
+                    alert('예약 링크를 입력해주세요.');
+                    return;
+                }
+
+                var filepaths = '';
+                if(uploadedFiles.length === 0) {
+                    if (!confirm('이미지를 등록하지 않았습니다. 계속하시겠습니까?')) {
+                        console.log('업로드 취소됨');
+                        return;
+                    }
+                } else {
+                    for (let file of uploadedFiles) {
+                        try {
+                            var filepathstring = await uploadFile(file);
+                            filepaths += filepathstring + ',';
+                        } catch (error) {
+                            console.error("File upload failed:", error);
+                        }
+                    }
+                    if (filepaths.length > 0) {
+                        filepaths = filepaths.slice(0, -1);
+                    }
+                }
+                console.log('filepaths:', filepaths);
+
+                await setData({
+                    model: 'AROUND',
+                    id: '',
+                    field_value: JSON.stringify({
+                        name: nameInput.value,
+                        address: addressInput.value,
+                        tel: telInput.value,
+                        around_type: aroundTypeInput.value,
+                        categories: categoriesInput.value.replaceAll(' ', ''),
+                        open_time: openTimeInput.value,
+                        holiday: holidayInput.value,
+                        reserve_link: reserveLinkInput.value,
+                        note: contentInput.innerHTML,
+                        medias: filepaths,
+                    })
+                }).then(async (data) => {
+                    var dbData = JSON.parse(data.db);
+                    var pk = dbData[0].pk;
+                    var fields = dbData[0].fields;
+
+                    Swal.fire({
+                        html: `
+                        <div>
+                            <div class="text-center py-4">
+                                <h1 class="text-dark">관광지 생성 완료</h1>
+                            </div>
+                            <diV class="text-start">
+                                <p class="text-secondary">
+                                    관광지 정보가 생성되었습니다.
+                                </p>
+                            </div>
+                        </div>`,
+                        icon: `success`,
+                        showConfirmButton: true,
+                        confirmButtonText: `확인`,
+                        showCancelButton: false,
+                        cancelButtonText: ``
+                    }).then(() => {
+                        window.location.href = `/supervisor_arounds`;
+                    });
+                });
+            }
+        </script>
+    </body>
+
+</html>

@@ -1,0 +1,441 @@
+<!DOCTYPE html>
+<html lang="ko">
+    {% load static %}
+    {% csrf_token %}
+
+    <head>
+
+        <meta name="robots" content="noindex, nofollow">
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge"/>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+
+        <title>제주야 관리자</title>
+
+        <!-- favicon
+        ================================================== -->
+        <link rel="icon" type="image/png" href="/static/_jejuya/img/logos/favicon.png">
+        <link rel="shortcut icon" href="/static/_jejuya/img/logos/favicon.png" />
+        <link rel="apple-touch-icon" href="/static/_jejuya/img/logos/apple-touch-icon-57x57.png" />
+        <link rel="apple-touch-icon" sizes="72x72" href="/static/_jejuya/img/logos/apple-touch-icon-72x72.png" />
+        <link rel="apple-touch-icon" sizes="114x114" href="/static/_jejuya/img/logos/apple-touch-icon-114x114.png" />
+
+        <!-- style
+        ================================================== -->
+        <link rel="stylesheet" href="/static/_jejuya/css/plugins.css"/>
+        <link rel="stylesheet" href="/static/_jejuya/css/custom.css"/>
+        <link rel="stylesheet" href="/static/_jejuya/css/styles.css"/>
+        <link rel="stylesheet" href="/static/_jejuya/css/index.css"/>
+        <link rel="stylesheet" href="/static/search/search.css"/>
+        <link rel="stylesheet" href="/static/quform/css/base.css"/>
+
+    </head>
+
+    <body style="word-break: keep-all;" class="bg-white">
+
+        <!-- PAGE LOADING ================================================== -->
+        <div id="preloader"></div>
+
+        <!-- MAIN WRAPPER ================================================== -->
+        <div class="main-wrapper">
+
+            <!-- HEADER
+            ================================================== -->
+            {% include "_jejuya/parts/header_supervisor.html" %}
+
+            <!-- MAIN SECTION
+            ================================================== -->
+            <section class="m-0 p-0 my-4" style="min-height: 100vh;">
+                <div class="container">
+
+                    <!-- goback -->
+                    <a class="small" href="javascript: window.location.href='/supervisor';">
+                        < 관리자 페이지로
+                    </a>
+
+                    <!-- title -->
+                    <div class="mt-2 mb-5">
+                        <div style="display: flex; justify-content: space-between; white-space: nowrap;">
+                            <div style="display: inline-block; text-align: left;">
+                                <h5>
+                                    사용자 계정
+                                </h5>
+                                <small>
+                                    사용자 계정을 확인하고 관리합니다.
+                                </small>
+                            </div>
+                            <div style="display: inline-block; text-align: right;">
+                                <a href="javascript: new bootstrap.Modal(writeSupervisor).show();" class="small">
+                                    <i class="fas fa-user-plus"></i> 관리자 추가
+                                </a>
+                            </div>
+                        </div>
+
+                    </div>
+
+                    <!-- content -->
+                    <div class="my-4">
+                        {% for account in accounts %}
+                        <div style="display: flex; justify-content: space-between; white-space: nowrap;">
+                            <div style="display: inline-block; text-align: left;">
+                                {% if account.account_type == 'supervisor' %}
+                                <span class="badge bg-danger">관리자</span>
+                                {% else %}
+                                <span class="badge bg-success">사용자</span>
+                                {% endif %}
+                            </div>
+                            <div style="display: inline-block; text-align: right;">
+                                <a href="javascript: deleteAccount('{{account.id}}');" class="btn btn-primary me-2 p-1 px-2">
+                                    <i class="fas fa-xmark"></i> 삭제
+                                </a>
+                                {% if account.account_type == 'supervisor' %}
+                                <a href="javascript: rewritePassword('{{account.id}}');" class="btn btn-primary p-1 px-2">
+                                    <i class="fas fa-key"></i> 비밀번호 재설정
+                                </a>
+                                {% endif %}
+                            </div>
+                        </div>
+                        <div class="mb-4">
+                            <p class="m-0 text-dark">
+                                ID: {{account.id}}
+                            </p>
+                            <small class="text-secondary">
+                                DeviceToken: 
+                                <span style="font-size: 10px;">
+                                    {{ account.device_token }}<br>
+                                </span>
+                            </small>
+                            <small>
+                                마지막 로그인: {{ account.dt }}
+                            </small>
+                        </div>
+                        {% endfor %}
+                    </div>
+
+                </div>
+            </section>
+
+        </div>
+
+        <!-- FIXED BUTTONS
+        ================================================== -->
+        <a href="#!" class="scroll-to-top"><i class="fas fa-angle-up" aria-hidden="true"></i></a>
+
+        <!-- MODALS
+        ================================================== -->
+        <!-- writeSupervisor -->
+        <div class="modal fade" id="writeSupervisor" tabindex="-1" aria-labelledby="modalLabel" aria-hidden="true">
+            <div class="modal-dialog modal-dialog-centered">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title">관리자 추가</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <div class="form-group">
+                            <label>아이디</label> <small id="supervisorIdConfirmText"></small>
+                            <input type="text" class="form-control" id="supervisorId">
+                        </div>
+                        <div class="form-group">
+                            <label>새 비밀번호</label> <small id="supervisorPasswordConfirmText"></small>
+                            <input type="password" class="form-control" id="supervisorPassword">
+                            <small>
+                                영문, 숫자 조합 6~16자
+                            </small>
+                        </div>
+                        <div class="form-group">
+                            <label>새 비밀번호 확인</label> <small id="supervisorPasswordCheckConfirmText"></small>
+                            <input type="password" class="form-control" id="supervisorPasswordCheck">
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-primary" onclick="setSupervisor();" data-bs-dismiss="modal" aria-label="Close">생성하기</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- rewritePasswordModal -->
+        <div class="modal fade" id="rewritePasswordModal" tabindex="-1" aria-labelledby="modalLabel" aria-hidden="true">
+            <div class="modal-dialog modal-dialog-centered">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title">비밀번호 재설정</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <div class="form-group">
+                            <label>새 비밀번호</label> <small id="passwordConfirmText"></small>
+                            <input type="password" class="form-control" id="password">
+                            <small>
+                                영문, 숫자 조합 6~16자
+                            </small>
+                        </div>
+                        <div class="form-group">
+                            <label>새 비밀번호 확인</label> <small id="passwordCheckConfirmText"></small>
+                            <input type="password" class="form-control" id="passwordCheck">
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-primary" onclick="setPassword();" data-bs-dismiss="modal" aria-label="Close">재설정하기</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <script src="/static/_jejuya/js/jquery.min.js"></script>
+        <script src="/static/_jejuya/js/popper.min.js"></script>
+        <script src="/static/_jejuya/js/bootstrap.min.js"></script>
+        <script src="/static/_jejuya/js/scrollIt.min.js"></script>
+        <script src="/static/_jejuya/js/nav-menu.js"></script>
+        <script src="/static/_jejuya/js/easy.responsive.tabs.js"></script>
+        <script src="/static/_jejuya/js/owl.carousel.js"></script>
+        <script src="/static/_jejuya/js/owl.carousel.thumbs.js"></script>
+        <script src="/static/_jejuya/js/animated-headline.js"></script>
+        <script src="/static/_jejuya/js/jquery.counterup.min.js"></script>
+        <script src="/static/_jejuya/js/jquery.stellar.min.js"></script>
+        <script src="/static/_jejuya/js/waypoints.min.js"></script>
+        <script src="/static/_jejuya/js/countdown.js"></script>
+        <script src="/static/_jejuya/js/clipboard.min.js"></script>
+        <script src="/static/_jejuya/js/jquery.magnific-popup.min.js"></script>
+        <script src="/static/_jejuya/js/isotope.pkgd.min.js"></script>
+        <script src="/static/_jejuya/js/jquery.mousewheel.min.js"></script>
+        <script src="/static/_jejuya/js/lightgallery-all.js"></script>
+        <script src="/static/_jejuya/js/wow.js"></script>
+        <script src="/static/_jejuya/js/prism.js"></script>
+        <script src="/static/_jejuya/js/xzoom.js"></script>
+        <script src="/static/_jejuya/js/jquery.hammer.min.js"></script>
+        <script src="/static/_jejuya/js/setup.js"></script>
+        <script src="/static/_jejuya/js/jarallax.min.js"></script>
+        <script src="/static/_jejuya/js/jarallax-video.js"></script>
+        <script src="/static/_jejuya/js/gsap.js"></script>
+        <script src="/static/_jejuya/js/scrolltrigger.js"></script>
+        <script src="/static/_jejuya/js/splittext.js"></script>
+        <script src="/static/_jejuya/js/gsap-animation.js"></script>
+        <script src="/static/_jejuya/js/custom.js"></script>
+        <script src="/static/_jejuya/js/main.js"></script>
+        <script src="//cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+        <script src="/static/quform/js/plugins.js"></script>
+        <script src="/static/quform/js/scripts.js"></script>
+        <script src="/static/search/search.js"></script>
+        <script>
+            // variables
+            var currentId = '';
+            var passwordRegex = /^(?=.*[a-zA-Z])(?=.*[0-9]).{6,16}$/;
+            var passwordOk = false;
+            var passwordCheckOk = false;
+            var supervisorPasswordOk = false;
+            var supervisorPasswordCheckOk = false;
+            var idCheckOk = false;
+
+            // functions
+            window.onload = () => {
+                console.log(`Window loaded at ${getNowDt()}`);
+            }
+
+            document.getElementById('supervisorId').addEventListener('input', async () => {
+                var supervisorId = document.getElementById('supervisorId').value;
+                var supervisorIdConfirmText = document.getElementById('supervisorIdConfirmText');
+
+                var formData = new FormData();
+                formData.append('id', supervisorId);
+                await fetch('/api/check_id', {
+                    method: 'POST',
+                    body: formData,
+                    headers: {
+                        'X-CSRFToken': csrftoken
+                    }
+                })
+                .then(async (response) => response.json())
+                .then(async (data) => {
+                    var success = data['success'];
+                    console.log(success);
+
+                    if (success == 'y') {
+                        supervisorIdConfirmText.innerHTML = `<span class="text-success">사용 가능한 아이디입니다.</span>`;
+                        idCheckOk = true;
+                    } else {
+                        supervisorIdConfirmText.innerHTML = `<span class="text-danger">이미 사용 중인 아이디입니다.</span>`;
+                        idCheckOk = false;
+                    }
+                });
+            });
+
+            document.getElementById('supervisorPassword').addEventListener('input', () => {
+                var supervisorPassword = document.getElementById('supervisorPassword').value;
+                var supervisorPasswordConfirmText = document.getElementById('supervisorPasswordConfirmText');
+                var supervisorPasswordCheck = document.getElementById('supervisorPasswordCheck').value;
+                var supervisorPasswordCheckConfirmText = document.getElementById('supervisorPasswordCheckConfirmText');
+
+                if (passwordRegex.test(supervisorPassword)) {
+                    supervisorPasswordConfirmText.innerHTML = `<span class="text-success">사용 가능한 비밀번호입니다.</span>`;
+                    supervisorPasswordOk = true;
+                    supervisorPasswordCheckConfirmText.innerHTML = `<span class="text-secondary">비밀번호를 한 번 더 입력해주세요.</span>`;
+                    supervisorPasswordCheckOk = false;
+                } else {
+                    supervisorPasswordConfirmText.innerHTML = `<span class="text-danger">영문, 숫자 조합 6~16자로 입력해주세요.</span>`;
+                    supervisorPasswordOk = false;
+                    supervisorPasswordCheckConfirmText.innerHTML = `<span class="text-secondary">비밀번호를 한 번 더 입력해주세요.</span>`;
+                    supervisorPasswordCheckOk = false;
+                }
+            });
+
+            document.getElementById('supervisorPasswordCheck').addEventListener('input', () => {
+                var supervisorPassword = document.getElementById('supervisorPassword').value;
+                var supervisorPasswordCheck = document.getElementById('supervisorPasswordCheck').value;
+                var supervisorPasswordCheckConfirmText = document.getElementById('supervisorPasswordCheckConfirmText');
+
+                if (supervisorPassword == supervisorPasswordCheck) {
+                    supervisorPasswordCheckConfirmText.innerHTML = `<span class="text-success">비밀번호가 일치합니다.</span>`;
+                    supervisorPasswordCheckOk = true;
+                } else {
+                    supervisorPasswordCheckConfirmText.innerHTML = `<span class="text-danger">비밀번호가 일치하지 않습니다.</span>`;
+                    supervisorPasswordCheckOk = false;
+                }
+            });
+
+            document.getElementById('password').addEventListener('input', () => {
+                var password = document.getElementById('password').value;
+                var passwordConfirmText = document.getElementById('passwordConfirmText');
+                var passwordCheck = document.getElementById('passwordCheck').value;
+                var passwordCheckConfirmText = document.getElementById('passwordCheckConfirmText');
+
+                if (passwordRegex.test(password)) {
+                    passwordConfirmText.innerHTML = `<span class="text-success">사용 가능한 비밀번호입니다.</span>`;
+                    passwordOk = true;
+                    passwordCheckConfirmText.innerHTML = `<span class="text-secondary">비밀번호를 한 번 더 입력해주세요.</span>`;
+                    passwordCheckOk = false;
+                } else {
+                    passwordConfirmText.innerHTML = `<span class="text-danger">영문, 숫자 조합 6~16자로 입력해주세요.</span>`;
+                    passwordOk = false;
+                    passwordCheckConfirmText.innerHTML = `<span class="text-secondary">비밀번호를 한 번 더 입력해주세요.</span>`;
+                    passwordCheckOk = false;
+                }
+            });
+
+            document.getElementById('passwordCheck').addEventListener('input', () => {
+                var password = document.getElementById('password').value;
+                var passwordCheck = document.getElementById('passwordCheck').value;
+                var passwordCheckConfirmText = document.getElementById('passwordCheckConfirmText');
+
+                if (password == passwordCheck) {
+                    passwordCheckConfirmText.innerHTML = `<span class="text-success">비밀번호가 일치합니다.</span>`;
+                    passwordCheckOk = true;
+                } else {
+                    passwordCheckConfirmText.innerHTML = `<span class="text-danger">비밀번호가 일치하지 않습니다.</span>`;
+                    passwordCheckOk = false;
+                }
+            });
+
+            rewritePassword = (accountId) => {
+                currentId = accountId;
+                passwordOk = false;
+                passwordCheckOk = false;
+                new bootstrap.Modal(rewritePasswordModal).show();
+            }
+
+            setPassword = async () => {
+                if (!passwordOk || !passwordCheckOk) {
+                    return;
+                }
+
+                var password = document.getElementById('password').value;
+
+                var formData = new FormData();
+                formData.append('id', currentId);
+                formData.append('password', SHA256(password));
+                await fetch('/api/rewrite_password', {
+                    method: 'POST',
+                    body: formData,
+                    headers: {
+                        'X-CSRFToken': csrftoken
+                    }
+                })
+                .then(async (response) => response.json())
+                .then(async (data) => {
+                    var success = data['success'];
+                    console.log(success);
+
+                    if (success == 'y') {
+                        updateComplete();
+                    }
+                });
+            }
+
+            deleteAccount = async (accountId) => {
+                Swal.fire({
+                    html: `
+                    <div>
+                        <div class="text-center py-4">
+                            <h1 class="text-dark">계정 삭제</h1>
+                        </div>
+                        <diV class="text-start">
+                            <p class="text-secondary">
+                                계정을 삭제하시겠습니까?<br>
+                                삭제된 계정은 복구할 수 없습니다.
+                            </p>
+                        </div>
+                    </div>`,
+                    icon: `warning`,
+                    showConfirmButton: true,
+                    confirmButtonText: `삭제하기`,
+                    confirmButtonColor: `#dc3545`,
+                    showCancelButton: true,
+                    cancelButtonText: `취소`,
+                }).then(async (result) => {
+                    if (result.isConfirmed) {
+                        var formData = new FormData();
+                        formData.append('id', accountId);
+                        await fetch('/api/delete_account', {
+                            method: 'POST',
+                            body: formData,
+                            headers: {
+                                'X-CSRFToken': csrftoken
+                            }
+                        })
+                        .then(async (response) => response.json())
+                        .then(async (data) => {
+                            var success = data['success'];
+                            console.log(success);
+
+                            if (success == 'y') {
+                                updateComplete();
+                            }
+                        });
+                    }
+                });
+            }
+
+            setSupervisor = async () => {
+                if (!idCheckOk || !supervisorPasswordOk || !supervisorPasswordCheckOk) {
+                    return;
+                }
+
+                var supervisorId = document.getElementById('supervisorId').value;
+                var supervisorPassword = document.getElementById('supervisorPassword').value;
+
+                var formData = new FormData();
+                formData.append('id', supervisorId);
+                formData.append('password', SHA256(supervisorPassword));
+                await fetch('/api/write_supervisor', {
+                    method: 'POST',
+                    body: formData,
+                    headers: {
+                        'X-CSRFToken': csrftoken
+                    }
+                })
+                .then(async (response) => response.json())
+                .then(async (data) => {
+                    var success = data['success'];
+                    console.log(success);
+
+                    if (success == 'y') {
+                        updateComplete();
+                    }
+                });
+            }
+
+        </script>
+    </body>
+
+</html>

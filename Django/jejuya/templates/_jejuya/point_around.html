@@ -1,0 +1,476 @@
+<!DOCTYPE html>
+<html lang="ko">
+    {% load static %}
+    {% csrf_token %}
+
+    <head>
+
+        <meta name="robots" content="noindex, nofollow">
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge"/>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+
+        <title>제주야</title>
+
+        <!-- favicon
+        ================================================== -->
+        <link rel="icon" type="image/png" href="/static/_jejuya/img/logos/favicon.png">
+        <link rel="shortcut icon" href="/static/_jejuya/img/logos/favicon.png" />
+        <link rel="apple-touch-icon" href="/static/_jejuya/img/logos/apple-touch-icon-57x57.png" />
+        <link rel="apple-touch-icon" sizes="72x72" href="/static/_jejuya/img/logos/apple-touch-icon-72x72.png" />
+        <link rel="apple-touch-icon" sizes="114x114" href="/static/_jejuya/img/logos/apple-touch-icon-114x114.png" />
+
+        <!-- style
+        ================================================== -->
+        <link rel="stylesheet" href="/static/_jejuya/css/plugins.css"/>
+        <link rel="stylesheet" href="/static/_jejuya/css/custom.css"/>
+        <link rel="stylesheet" href="/static/_jejuya/css/styles.css"/>
+        <link rel="stylesheet" href="/static/_jejuya/css/index.css"/>
+        <link rel="stylesheet" href="/static/search/search.css"/>
+        <link rel="stylesheet" href="/static/quform/css/base.css"/>
+
+        <!-- 달력 -->
+        <link rel="stylesheet" href="/static/_jejuya/css/calendarwidget.css"/>
+
+        <!-- 네이버 지도 -->
+        <script type="text/javascript" src="https://openapi.map.naver.com/openapi/v3/maps.js?ncpClientId="></script>
+
+        <!-- full calendar -->
+        <link href='https://cdnjs.cloudflare.com/ajax/libs/fullcalendar/4.2.0/core/main.min.css' rel='stylesheet' />
+        <script src='https://cdnjs.cloudflare.com/ajax/libs/fullcalendar/4.2.0/core/main.min.js'></script>
+        <script src='https://cdnjs.cloudflare.com/ajax/libs/fullcalendar/4.2.0/interaction/main.min.js'></script>
+        <script src='https://cdnjs.cloudflare.com/ajax/libs/fullcalendar/4.2.0/daygrid/main.min.js'></script>
+
+    </head>
+
+    <body style="word-break: keep-all;" class="bg-white">
+
+        <!-- PAGE LOADING ================================================== -->
+        <div id="preloader"></div>
+
+        <!-- MAIN WRAPPER ================================================== -->
+        <div class="main-wrapper">
+
+            <!-- HEADER
+            ================================================== -->
+            {% include "_jejuya/parts/header.html" %}
+
+            <!-- MAIN SECTION
+            ================================================== -->
+            <div id="map" style="width:100%; height: calc(100vh - 70px);">
+
+                <!-- 지도 헤더 -->
+                <div class="keyword-wrapper">
+                    <div class="keywords-container">
+                        <button class="keyword-btn text-white shadow-sm" style="background-color: rgb(100, 100, 100)" onclick="searchType('')">모두</button>
+                        {% for type in all_types %}
+                        {% if type == '전시/박물관' %}
+                        <button class="keyword-btn text-white shadow-sm" style="background-color: #FF5733" onclick="searchType('{{type}}')"><i class="fi fi-rr-sculpture"></i> 박물관</button>
+                        {% elif type == '스포츠/레저' %}
+                        <button class="keyword-btn text-white shadow-sm" style="background-color: #33B5E5" onclick="searchType('{{type}}')"><i class="fi fi-rr-biking"></i> 스포츠/레져</button>
+                        {% elif type == '맛집' %}
+                        <button class="keyword-btn text-white shadow-sm" style="background-color: #50b200" onclick="searchType('{{type}}')"><i class="fi fi-rr-restaurant"></i> 맛집</button>
+                        {% elif type == '공연/쇼' %}
+                        <button class="keyword-btn text-white shadow-sm" style="background-color: #FF33BB" onclick="searchType('{{type}}')"><i class="fi fi-rr-theater-masks"></i> 공연/쇼</button>
+                        {% elif type == '테마공원' %}
+                        <button class="keyword-btn text-white shadow-sm" style="background-color: #eeb300" onclick="searchType('{{type}}')"><i class="fi fi-rr-ferris-wheel"></i> 테마공원</button>
+                        {% elif type == '해양관광' %}
+                        <button class="keyword-btn text-white shadow-sm" style="background-color: #8E44AD" onclick="searchType('{{type}}')"><i class="fi fi-rr-mask-snorkel"></i> 해양관광</button>
+                        {% elif type == '패키지' %}
+                        <button class="keyword-btn text-white shadow-sm" style="background-color: #FF6F00" onclick="searchType('{{type}}')"><i class="fi fi-rr-tour-guide-people"></i> 패키지</button>
+                        {% elif type == '체험' %}
+                        <button class="keyword-btn text-white shadow-sm" style="background-color: #009688" onclick="searchType('{{type}}')"><i class="fi fi-rr-hand-paper"></i> 체험</button>
+                        {% elif type == '전시/관광' %}
+                        <button class="keyword-btn text-white shadow-sm" style="background-color: #C0392B" onclick="searchType('{{type}}')"><i class="fi fi-rr-resources"></i> 전시/관광</button>
+                        {% endif %}
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        {% include "_jejuya/offcanvas/point.html" %}
+        {% include "_jejuya/offcanvas/around.html" %}
+        {% include "_jejuya/offcanvas/distance.html" %}
+
+        <!-- 일정 모달 -->
+        <div class="modal fade" id="schedule-modal" tabindex="-1" role="dialog" aria-labelledby="schedule-modal-label" aria-hidden="true">
+            <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">날짜 선택</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <!-- 달력 시작 -->
+                    <div id="calendar-widget">
+                        <div id="head-wrapper" class="d-flex align-items-center justify-content-center">
+                            <div id="prev" class="button-wrapper me-3">
+                                <button type="button" id="prev-button">
+                                    &lt;
+                                </button>
+                            </div>
+                            <!--<h2 id="day" class="mx-2"></h2>
+                            <h2 id="date" class="mx-2"></h2>-->
+                            <h3 id="month" class="mx-3"></h3>
+                            <div id="next" class="button-wrapper ms-3">
+                                <button type="button" id="next-button">
+                                    &gt;
+                                </button>
+                            </div>
+                        </div>
+                        <div id="calendar-wrapper">
+                            <div id="table-wrapper">
+                                <h3 id="week"></h3>
+                                <table id="calendar-table">
+                                    <thead>
+                                        <tr>
+                                            <th>월</th>
+                                            <th>화</th>
+                                            <th>수</th>
+                                            <th>목</th>
+                                            <th>금</th>
+                                            <th>토</th>
+                                            <th>일</th>
+                                        </tr>
+                                    </thead>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- 달력 끝 -->
+                    <!--<div id="calendar"></div>-->
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-success" data-bs-dismiss="modal" onclick="selectDate(getToday());">
+                        현재 날짜에 추가
+                    </button>
+                    <button type="button" class="btn btn-primary" data-bs-dismiss="modal" onclick="selectDate(CalendarWidget.selectedDate);">저장</button>
+
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">닫기</button>
+                </div>
+                </div>
+            </div>
+        </div>
+
+        <script src="/static/_jejuya/js/jquery.min.js"></script>
+        <script src="/static/_jejuya/js/popper.min.js"></script>
+        <script src="/static/_jejuya/js/bootstrap.min.js"></script>
+        <script src="/static/_jejuya/js/scrollIt.min.js"></script>
+        <script src="/static/_jejuya/js/nav-menu.js"></script>
+        <script src="/static/_jejuya/js/easy.responsive.tabs.js"></script>
+        <script src="/static/_jejuya/js/owl.carousel.js"></script>
+        <script src="/static/_jejuya/js/owl.carousel.thumbs.js"></script>
+        <script src="/static/_jejuya/js/animated-headline.js"></script>
+        <script src="/static/_jejuya/js/jquery.counterup.min.js"></script>
+        <script src="/static/_jejuya/js/jquery.stellar.min.js"></script>
+        <script src="/static/_jejuya/js/waypoints.min.js"></script>
+        <script src="/static/_jejuya/js/countdown.js"></script>
+        <script src="/static/_jejuya/js/clipboard.min.js"></script>
+        <script src="/static/_jejuya/js/jquery.magnific-popup.min.js"></script>
+        <script src="/static/_jejuya/js/isotope.pkgd.min.js"></script>
+        <script src="/static/_jejuya/js/jquery.mousewheel.min.js"></script>
+        <script src="/static/_jejuya/js/lightgallery-all.js"></script>
+        <script src="/static/_jejuya/js/wow.js"></script>
+        <script src="/static/_jejuya/js/prism.js"></script>
+        <script src="/static/_jejuya/js/xzoom.js"></script>
+        <script src="/static/_jejuya/js/jquery.hammer.min.js"></script>
+        <script src="/static/_jejuya/js/setup.js"></script>
+        <script src="/static/_jejuya/js/jarallax.min.js"></script>
+        <script src="/static/_jejuya/js/jarallax-video.js"></script>
+        <script src="/static/_jejuya/js/gsap.js"></script>
+        <script src="/static/_jejuya/js/scrolltrigger.js"></script>
+        <script src="/static/_jejuya/js/splittext.js"></script>
+        <script src="/static/_jejuya/js/gsap-animation.js"></script>
+        <script src="/static/_jejuya/js/custom.js"></script>
+        <script src="/static/_jejuya/js/main.js"></script>
+        <script src="//cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+        <script src="/static/quform/js/plugins.js"></script>
+        <script src="/static/quform/js/scripts.js"></script>
+        <script src="/static/search/search.js"></script>
+        <script src="/static/_jejuya/js/calendarwidget.js"></script>
+        <script>
+
+            // offcanvas 설정
+            var offcanvasDistanceElement = document.getElementById('offcanvas-distance');
+            var offcanvasDistance = new bootstrap.Offcanvas(offcanvasDistanceElement, {
+                backdrop: true
+            });
+            var offcanvasPointElement = document.getElementById('offcanvas-point');
+            var offcanvasPoint = new bootstrap.Offcanvas(offcanvasPointElement, {
+                backdrop: true
+            });
+            var offcanvasAroundElement = document.getElementById('offcanvas-around');
+            var offcanvasAround = new bootstrap.Offcanvas(offcanvasAroundElement, {
+                backdrop: true
+            });
+
+            // 지도 설정. 선택된 point를 중심으로 지도를 보여줌
+            var map = new naver.maps.Map(document.getElementById("map"),
+                {
+                    center: new naver.maps.LatLng({{point.latitude}}, {{point.longitude}}), zoom: 12
+                }
+            );
+
+            // point 마커 HTML
+            var pointMarkerHtml = `
+                <div class="border bg-white p-1 px-2" style="font-size: 11px; white-space: nowrap; border-radius: 15px;">
+                    <i class="fa-lg fa-solid fa-location-crosshairs text-primary"></i> {name}
+                </div>
+            `;
+
+            // around 마커 HTML
+            var aroundMarkerHtml = `
+                <div class="border bg-white p-1 px-2" style="font-size: 11px; white-space: nowrap; border-radius: 15px;">
+                    <i class="fa-lg fa-solid fa-location-dot text-warning"></i> {name}
+                </div>
+            `;
+
+            // 검색 반경 설정
+            searchDistance = () => {
+                var distance = document.getElementById('distanceRange').value;
+                window.location.href = `/point_around?point_id={{point.id}}&distance=${distance}&point_type={{request.GET.point_type}}`;
+            }
+
+            // 검색 타입 설정
+            searchType = (type) => {
+                window.location.href = `/point_around?point_id={{point.id}}&distance={{distance}}&point_type=${type}`;
+            }
+
+            ////////// 지도에 마커 생성 및 이벤트 설정 //////////
+            // point 마커 생성
+            // point: id, name, latitude, longitude, tel, rooms_cnt, address, note, medias
+            var markerPoint = new naver.maps.Marker({
+                map: map,
+                position: new naver.maps.LatLng({{point.latitude}}, {{point.longitude}}),
+                title: '{{point.name}}',
+                icon: {
+                    content: pointMarkerHtml.replace('{name}', '{{point.name}}({{point.rooms_cnt}})'),
+                    anchor: new naver.maps.Point(12, 12),
+                    size: new naver.maps.Size(24, 37),
+                }
+            });
+
+            // point 마커 클릭 이벤트
+            markerPoint.addListener('click', function(e) {
+                console.log(`${e.overlay.title} 마커 클릭됨`);
+                document.getElementById('pointName').innerText = '{{point.name}}';
+                document.getElementById('pointRoomsCnt').innerText = `객실 수: {{point.rooms_cnt}}`;
+                document.getElementById('pointDescription').innerHTML = '{{point.note}}';
+                document.getElementById('pointAddress').innerHTML = '<i class="fa-solid fa-location-dot"></i> {{point.address}}';
+                document.getElementById('pointTel').innerHTML = '<i class="fa-solid fa-phone"></i> {{point.tel}}';
+                document.getElementById('pointTel').href = 'tel:{{point.tel}}';
+                {% if point.medias|length < 1 or point.medias.0 == '' %}
+                document.getElementById('pointMediaCarousel').style.display = 'none';
+                {% else %}
+                document.getElementById('pointMediaCarousel').style.display = 'block';
+                medias = [
+                    {% for media in point.medias %}
+                    '{{media}}',
+                    {% endfor %}
+                ]
+                document.querySelectorAll('.carouselItemDisplay').forEach((item) => {
+                    item.style.background = `url('${medias[0]}') center/contain no-repeat`;
+                });
+                for (var i = 0; i < medias.length; i++) {
+                    document.querySelector('.carouselItemDisplay' + i).style.background = `url('${medias[i]}') center/contain no-repeat`;
+                }
+                {% endif %}
+                document.getElementById('aroundSearchButton').style.display = 'none';
+                offcanvasPoint.show();
+            });
+
+            // around 마커 생성(Django)
+            {% for around in arounds %}
+            var marker{{forloop.counter}} = new naver.maps.Marker({
+                map: map,
+                position: new naver.maps.LatLng({{around.latitude}}, {{around.longitude}}),
+                title: '{{around.name}}',
+                icon: {
+                    content: aroundMarkerHtml.replace('{name}', '{{around.name}}({{around.around_type}})'),
+                    anchor: new naver.maps.Point(12, 12),
+                    size: new naver.maps.Size(24, 37),
+                }
+            });
+
+            marker{{forloop.counter}}.addListener('click', function(e) {
+                console.log(`${e.overlay.title} 마커 클릭됨`);
+                document.getElementById('aroundName').innerText = '{{around.name}}';
+                document.getElementById('aroundOpenHoliday').innerText = `영업시간: {{around.open_time}} / 휴무일: {{around.holiday}}`;
+                document.getElementById('aroundDescription').innerHTML = '{{around.note}}';
+                document.getElementById('aroundAddress').innerHTML = '<i class="fa-solid fa-location-dot"></i> {{around.address}}';
+                document.getElementById('aroundTel').innerHTML = '<i class="fa-solid fa-phone"></i> {{around.tel}}';
+                document.getElementById('aroundTel').href = 'tel:{{around.tel}}';
+                {% if around.medias|length < 1 or around.medias.0 == '' %}
+                document.getElementById('aroundMediaCarousel').style.display = 'none';
+                {% else %}
+                document.getElementById('aroundMediaCarousel').style.display = 'block';
+                medias = [
+                    {% for media in around.medias %}
+                    '{{media}}',
+                    {% endfor %}
+                ]
+                document.querySelectorAll('.carouselItemDisplay').forEach((item) => {
+                    item.style.background = `url('${medias[0]}') center/contain no-repeat`;
+                });
+                for (var i = 0; i < medias.length; i++) {
+                    document.querySelectorAll('.carouselItemDisplay' + i).forEach((item) => {
+                        item.style.background = `url('${medias[i]}') center/contain no-repeat`;
+                    });
+                }
+                {% endif %}
+                document.getElementById('aroundReserve').href = '{{around.reserve_link}}';
+                document.getElementById('aroundAdd').href = `javascript: openScheduleSelectModal('{{around.id}}')`;
+
+                offcanvasAround.show();
+            });
+            {% endfor %}
+            // *마커 및 이벤트 설정 끝*
+
+            // 스케줄 추가 모달 열기
+            let selectedAroundId; // 선택된 관광지 ID
+            openScheduleSelectModal = (around_id) => {;
+                selectedAroundId = around_id;
+                offcanvasAround.hide();
+                new bootstrap.Modal(document.getElementById('schedule-modal')).show();
+            }
+
+            // 선택된 관광지 ID를 스케줄에 추가. date: 'YYYY-MM-DD'
+            selectDate = async (date) => {
+                if (date == null) {
+                    alert('날짜를 선택해주세요.');
+                    return
+                }
+
+                console.log(`스케줄 추가 ${selectedAroundId} at ${date}`);
+
+                // 날짜 스케줄이 있는지 확인
+                await getData({
+                    model: 'SCHEDULE',
+                    id: '',
+                    field: 'user_id',
+                    value: '{{account.id}}'
+                }).then(async (data) => {
+                    var dbData = JSON.parse(data.db);
+                    var exist = false;
+                    for(var i = 0; i > dbData.length; i++) {
+                        if(dbData[i].fields.date == date) {
+                            exist = true
+                        }
+                    }
+                    if (exist) {
+                        console.log(`이미 스케줄이 있음`);
+                        await setData({
+                            model: 'SCHEDULE_ITEM',
+                            id: '',
+                            field_value: JSON.stringify({
+                                around_id: selectedAroundId,
+                                schedule_id: dbData[0].pk,
+                            })
+                        }).then(async (data) => {
+                            console.log(`스케줄 관광지 추가됨`);
+                        });
+                    } else {
+                        console.log(`스케줄이 없음`);
+                        // 스케줄 추가
+                        await setData({
+                            model: 'SCHEDULE',
+                            id: '',
+                            field_value: JSON.stringify({
+                                date: date,
+                                user_id: '{{account.id}}',
+                            })
+                        }).then(async (data) => {
+                            console.log(`스케줄 추가됨`);
+                            var dbData = JSON.parse(data.db);
+                            var pk = dbData[0].pk;
+                            var fields = dbData[0].fields;
+
+                            // 첫번쨰 스케줄은 숙소로 설정
+                            await setData({
+                                model: 'SCHEDULE_ITEM',
+                                id: '',
+                                field_value: JSON.stringify({
+                                    around_id: '{{point.id}}', // 첫번째 관광지는 숙소
+                                    schedule_id: pk,
+                                })
+                            });
+
+                            // 선택된 관광지 추가
+                            await setData({
+                                model: 'SCHEDULE_ITEM',
+                                id: '',
+                                field_value: JSON.stringify({
+                                    around_id: selectedAroundId,
+                                    schedule_id: pk,
+                                })
+                            }).then(async (data) => {
+                                console.log(`스케줄 관광지 추가됨`);
+                            });
+                        });
+                    }
+
+                    // 완료 메시지 표시
+                    await Swal.fire({
+                        html: `
+                        <div>
+                            <div class="text-center py-4">
+                                <h1 class="text-dark">일정 추가 완료</h1>
+                            </div>
+                            <diV class="text-start">
+                                <p class="text-secondary">
+                                    스케줄에 관광지가 추가되었습니다.<br>
+                                    일정을 확인하시겠습니까?
+                                </p>
+                            </div>
+                        </div>`,
+                        icon: `success`,
+                        showConfirmButton: true,
+                        confirmButtonText: `스케줄 보기`,
+                        showCancelButton: true,
+                        cancelButtonText: `닫기`,
+                    }).then((result) => {
+                        if (result.isConfirmed) {
+                            window.location.href = `/schedule`;
+                        }
+                    });
+                });
+            }
+
+            // 달력 날짜 부분에 '일' 글자를 없애려고 했는데, 이게 잘 안되어서 보내는 시간이 좀 걸렸네요.
+            // 일단 결과 보내드리고 마저 알아보려고 합니다.
+            // document.addEventListener("DOMContentLoaded", function() {
+            //     var calendarEl = document.getElementById('calendar');
+            //     var calendar = new FullCalendar.Calendar(calendarEl, {
+            //         plugins: ['interaction', 'dayGrid'],
+            //         defaultDate: '2024-01-01',
+            //         locale: 'ko',
+            //         editable: true,
+            //         // dayRender: function(dayRenderInfo) {
+            //         //     // Access the day element and modify its content
+            //         //     var dayElement = dayRenderInfo.el;
+            //         //     console.log(dayElement);
+            //         //     var dayNumberSpan = dayElement.querySelector('.fc-day-number');
+            //         //     console.log(dayNumberSpan);
+            //         //     if (dayNumberSpan) {
+            //         //         dayNumberSpan.textContent = dayNumberSpan.textContent.replace(/일/g, '').trim();
+            //         //     }
+            //         // },
+            //         events: [
+            //             {
+            //                 title: '제주 여행',
+            //                 start: '2024-01-01T10:00:00',
+            //                 end: '2024-01-03T10:10:00'
+            //             }
+            //         ]
+            //     });
+            //     calendar.render();
+            // });
+            document.addEventListener("DOMContentLoaded", () => {
+                CalendarWidget.init();
+            });
+
+        </script>
+    </body>
+
+</html>
