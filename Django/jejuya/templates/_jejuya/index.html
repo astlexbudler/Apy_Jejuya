@@ -30,7 +30,7 @@
         <link rel="stylesheet" href="/static/quform/css/base.css"/>
 
         <!-- 네이버 지도 -->
-        <script type="text/javascript" src="https://openapi.map.naver.com/openapi/v3/maps.js?ncpClientId="></script>
+        <script type="text/javascript" src="https://openapi.map.naver.com/openapi/v3/maps.js?ncpClientId=9cif1z5tcu"></script>
 
     </head>
 
@@ -142,48 +142,72 @@
                 </div>
             `;
 
-            window.onload = () => {
-                console.log(`Window loaded at ${getNowDt()}`);
-
-                // User Agent 확인
-                var userAgent = navigator.userAgent || navigator.vendor || window.opera;
-
-                // iOS 확인
-                if (/iPad|iPhone|iPod/.test(userAgent) && !window.MSStream) {
-                    // iOS인 경우 버튼 숨기기
-                    var myLocationButton = document.getElementById("myLocationButton");
-                    if (myLocationButton) {
-                        myLocationButton.style.display = "none";
-                    }
-                }
-
-                /*
-                // 현재 위치 찾기(브라우저 위치 정보 사용)
-                if (navigator.geolocation) {
-                    navigator.geolocation.getCurrentPosition((position) => {
-                        const lat = position.coords.latitude;
-                        const lng = position.coords.longitude;
-
-                        console.log(`현재 위치: ${lat}, ${lng}`);
-
-                        // 제주도 좌표 범위
-                        const jejuLatMin = 33.1;
-                        const jejuLatMax = 33.6;
-                        const jejuLngMin = 126.1;
-                        const jejuLngMax = 126.9;
-
-                        // 사용자가 제주도 내에 있는지 확인
-                        if (lat >= jejuLatMin && lat <= jejuLatMax && lng >= jejuLngMin && lng <= jejuLngMax) {
-                            console.log('사용자의 위치가 제주도 내에 있습니다.');
-                            setMap(lat, lng);  // 제주도 내에 있을 경우에만 지도 설정
-                        } else {
-                            console.log('사용자의 위치가 제주도 바깥입니다.');
-                        }
-                    });
-                } else {
-                    console.log('브라우저 위치 정보 사용 불가');
-                }*/
+            window.onload = async () => {
+              console.log(`Window loaded at ${getNowDt()}`);
+                        
+              // User Agent 확인
+              const userAgent = navigator.userAgent || navigator.vendor || window.opera;
+              const isIOS = /iPad|iPhone|iPod/.test(userAgent) && !window.MSStream;
+              const isAndroid = /Android/.test(userAgent);
+                        
+              // iOS인 경우 버튼 숨기기
+              if (isIOS) {
+                  const myLocationButton = document.getElementById("myLocationButton");
+                  if (myLocationButton) {
+                      myLocationButton.style.display = "none";
+                  }
+              }
+          
+              // 지도 설정 함수
+              const setMapIfInJeju = (lat, lng) => {
+                  console.log(`현재 위치: ${lat}, ${lng}`);
+                  // 제주도 좌표 범위
+                  const jejuLatMin = 33.1;
+                  const jejuLatMax = 33.6;
+                  const jejuLngMin = 126.1;
+                  const jejuLngMax = 126.9;
+                
+                  // 사용자가 제주도 내에 있는지 확인
+                  if (lat >= jejuLatMin && lat <= jejuLatMax && lng >= jejuLngMin && lng <= jejuLngMax) {
+                      console.log('사용자의 위치가 제주도 내에 있습니다.');
+                      setMap(lat, lng); // 제주도 내에 있을 경우에만 지도 설정
+                  } else {
+                      console.log('사용자의 위치가 제주도 바깥입니다.');
+                      alert('제주도 외에서는 위치 기능이 작동하지 않습니다.');
+                  }
+              };
+          
+              // Android 스마트폰인 경우 앱 내 위치 요청
+              if (isAndroid && window.flutter_inappwebview) {
+                  try {
+                      const response = await window.flutter_inappwebview.callHandler('getLocation');
+                      const location = JSON.parse(response);
+                      if (location && location.latitude && location.longitude) {
+                          setMapIfInJeju(location.latitude, location.longitude);
+                          return;
+                      }
+                  } catch (error) {
+                      console.error('앱 내 위치 요청 실패:', error);
+                  }
+              }
+          
+              // 브라우저 위치 정보 사용
+              if (navigator.geolocation) {
+                  navigator.geolocation.getCurrentPosition(
+                      (position) => {
+                          const lat = position.coords.latitude;
+                          const lng = position.coords.longitude;
+                          setMapIfInJeju(lat, lng);
+                      },
+                      (error) => {
+                          console.error('브라우저 위치 정보 요청 실패:', error);
+                      }
+                  );
+              } else {
+                  console.log('브라우저 위치 정보 사용 불가');
+              }
             };
+
 
             // 현재 위치로 이동 버튼 클릭 이벤트
             setNowLocation = () => {
