@@ -151,8 +151,8 @@ def print_info_n_return(request, title, contexts, path): # print debug info and 
 
 def address_to_coords(address): # 주소를 기반으로 좌표로 변경
     destination = "https://naveropenapi.apigw.ntruss.com/map-geocode/v2/geocode"
-    client_id = "jqnqizu970"
-    client_secret = "QJgaBXPXVRVNbSUBQexgMJsSW7R6JRQ7iAqYhrG9"
+    client_id = ""
+    client_secret = ""
     query = address
 
     url = destination + "?query=" + query
@@ -174,8 +174,8 @@ def address_to_coords(address): # 주소를 기반으로 좌표로 변경
 
 def coords_to_address(lat, lng): # 좌표를 기반으로 주소로 변경
     destination = "https://naveropenapi.apigw.ntruss.com/map-reversegeocode/v2/gc"
-    client_id = "jqnqizu970"
-    client_secret = "QJgaBXPXVRVNbSUBQexgMJsSW7R6JRQ7iAqYhrG9"
+    client_id = ""
+    client_secret = ""
     coords = str(lng) + "," + str(lat)
 
     url = destination + "?coords=" + coords + "&output=json&order=addr"

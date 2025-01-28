@@ -30,7 +30,7 @@
         <link rel="stylesheet" href="/static/quform/css/base.css"/>
 
         <!-- 네이버 지도 -->
-        <script type="text/javascript" src="https://openapi.map.naver.com/openapi/v3/maps.js?ncpClientId=9cif1z5tcu"></script>
+        <script type="text/javascript" src="https://openapi.map.naver.com/openapi/v3/maps.js?ncpClientId="></script>
 
     </head>
 
@@ -177,34 +177,32 @@
                   }
               };
           
-              // Android 스마트폰인 경우 앱 내 위치 요청
-              if (isAndroid && window.flutter_inappwebview) {
-                  try {
-                      const response = await window.flutter_inappwebview.callHandler('getLocation');
-                      const location = JSON.parse(response);
-                      if (location && location.latitude && location.longitude) {
-                          setMapIfInJeju(location.latitude, location.longitude);
-                          return;
-                      }
-                  } catch (error) {
-                      console.error('앱 내 위치 요청 실패:', error);
-                  }
-              }
-          
-              // 브라우저 위치 정보 사용
-              if (navigator.geolocation) {
-                  navigator.geolocation.getCurrentPosition(
-                      (position) => {
-                          const lat = position.coords.latitude;
-                          const lng = position.coords.longitude;
-                          setMapIfInJeju(lat, lng);
-                      },
-                      (error) => {
-                          console.error('브라우저 위치 정보 요청 실패:', error);
-                      }
-                  );
-              } else {
-                  console.log('브라우저 위치 정보 사용 불가');
+              if (window.flutter_inappwebview) { // 웹뷰환경인 경우, GPS를 통해 좌표 수신
+                try {
+                    const response = await window.flutter_inappwebview.callHandler('getLocation');
+                    const location = JSON.parse(response);
+                    if (location && location.latitude && location.longitude) {
+                        setMapIfInJeju(location.latitude, location.longitude);
+                        return;
+                    }
+                } catch (error) {
+                    console.error('앱 내 위치 요청 실패:', error);
+                }
+              } else { // 브라우저인 경우, geolocation을 통해 좌표 수신
+                if (navigator.geolocation) {
+                    navigator.geolocation.getCurrentPosition(
+                        (position) => {
+                            const lat = position.coords.latitude;
+                            const lng = position.coords.longitude;
+                            setMapIfInJeju(lat, lng);
+                        },
+                        (error) => {
+                            console.error('브라우저 위치 정보 요청 실패:', error);
+                        }
+                    );
+                } else {
+                    console.log('브라우저 위치 정보 사용 불가');
+                }
               }
             };
 
